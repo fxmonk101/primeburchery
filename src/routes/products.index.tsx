@@ -5,7 +5,7 @@ import { ProductCard } from '@/components/product/ProductCard';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 
-export const Route = createFileRoute('/products')({
+export const Route = createFileRoute('/products/')({
   component: ProductsPage,
 });
 
