@@ -34,8 +34,6 @@ export const Route = createRootRoute({
       { property: "og:type", content: "website" },
       { name: "twitter:title", content: "PrimeButchery — Premium Grain-Fed Meats" },
       { name: "twitter:description", content: "Shop chef-trusted, grain-fed gourmet meats. Farm-transparent sourcing, cold-chain delivery, and 100% satisfaction guarantee." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/0b01c7c5-a9ac-4976-a2dc-3b0594386375/id-preview-97bbaad1--c7f8bfa0-60fe-42fb-b446-532263ae21bf.lovable.app-1775768344122.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/0b01c7c5-a9ac-4976-a2dc-3b0594386375/id-preview-97bbaad1--c7f8bfa0-60fe-42fb-b446-532263ae21bf.lovable.app-1775768344122.png" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [

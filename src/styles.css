@@ -54,6 +54,10 @@
   --color-success-foreground: var(--success-foreground);
   --color-sale: var(--sale);
   --color-slate-text: var(--slate-text);
+  --color-deep-green: var(--deep-green);
+  --color-deep-green-foreground: var(--deep-green-foreground);
+  --color-charcoal: var(--charcoal);
+  --color-dark: var(--dark);
   --font-heading: var(--font-heading);
   --font-body: var(--font-body);
   --font-button: var(--font-button);
@@ -62,59 +66,63 @@
 
 :root {
   --radius: 1rem;
-  /* Core palette - warm ivory base with crimson accent */
-  --background: oklch(0.976 0.012 75);
-  --foreground: oklch(0.22 0.01 250);
-  --card: oklch(0.99 0.005 80);
-  --card-foreground: oklch(0.22 0.01 250);
-  --popover: oklch(0.99 0.005 80);
-  --popover-foreground: oklch(0.22 0.01 250);
-  /* Crimson primary */
-  --primary: oklch(0.44 0.16 20);
-  --primary-foreground: oklch(0.98 0.005 80);
+  /* Core palette — ivory base, crimson + deep green from logo */
+  --background: hsl(36 55% 97%);
+  --foreground: hsl(0 0% 18%);
+  --card: hsl(40 50% 98%);
+  --card-foreground: hsl(0 0% 18%);
+  --popover: hsl(40 50% 98%);
+  --popover-foreground: hsl(0 0% 18%);
+  /* Crimson primary — from logo */
+  --primary: hsl(354 70% 38%);
+  --primary-foreground: hsl(40 50% 98%);
   /* Gold secondary */
-  --secondary: oklch(0.96 0.02 85);
-  --secondary-foreground: oklch(0.22 0.01 250);
-  --muted: oklch(0.94 0.015 80);
-  --muted-foreground: oklch(0.55 0.02 250);
-  --accent: oklch(0.94 0.015 80);
-  --accent-foreground: oklch(0.22 0.01 250);
-  --destructive: oklch(0.58 0.22 27);
-  --destructive-foreground: oklch(0.98 0.005 80);
-  --border: oklch(0.90 0.015 80);
-  --input: oklch(0.90 0.015 80);
-  --ring: oklch(0.44 0.16 20);
+  --secondary: hsl(43 20% 93%);
+  --secondary-foreground: hsl(0 0% 18%);
+  --muted: hsl(38 18% 91%);
+  --muted-foreground: hsl(220 9% 46%);
+  --accent: hsl(38 18% 91%);
+  --accent-foreground: hsl(0 0% 18%);
+  --destructive: hsl(0 72% 51%);
+  --destructive-foreground: hsl(40 50% 98%);
+  --border: hsl(36 20% 88%);
+  --input: hsl(36 20% 88%);
+  --ring: hsl(354 70% 38%);
 
   /* Brand tokens */
-  --crimson: oklch(0.44 0.16 20);
-  --crimson-foreground: oklch(0.98 0.005 80);
-  --gold: oklch(0.72 0.12 85);
-  --gold-foreground: oklch(0.22 0.01 250);
-  --ivory: oklch(0.976 0.012 75);
-  --cream: oklch(0.95 0.02 80);
-  --success: oklch(0.55 0.15 145);
-  --success-foreground: oklch(0.98 0.005 80);
-  --sale: oklch(0.60 0.22 25);
-  --slate-text: oklch(0.55 0.02 250);
+  --crimson: hsl(354 70% 38%);
+  --crimson-foreground: hsl(0 0% 100%);
+  --gold: hsl(43 56% 52%);
+  --gold-foreground: hsl(0 0% 12%);
+  --deep-green: hsl(120 32% 26%);
+  --deep-green-foreground: hsl(0 0% 100%);
+  --charcoal: hsl(0 0% 18%);
+  --dark: hsl(0 0% 10%);
+  --ivory: hsl(36 55% 97%);
+  --cream: hsl(38 38% 92%);
+  --success: hsl(135 45% 42%);
+  --success-foreground: hsl(0 0% 100%);
+  --sale: hsl(0 100% 65%);
+  --slate-text: hsl(220 9% 46%);
 
   --font-heading: 'Playfair Display', Georgia, serif;
   --font-body: 'Inter', system-ui, sans-serif;
   --font-button: 'Montserrat', system-ui, sans-serif;
   --font-price: 'DM Mono', monospace;
 
-  --chart-1: oklch(0.44 0.16 20);
-  --chart-2: oklch(0.72 0.12 85);
-  --chart-3: oklch(0.55 0.15 145);
-  --chart-4: oklch(0.60 0.22 25);
-  --chart-5: oklch(0.50 0.10 250);
-  --sidebar: oklch(0.99 0.005 80);
-  --sidebar-foreground: oklch(0.22 0.01 250);
-  --sidebar-primary: oklch(0.44 0.16 20);
-  --sidebar-primary-foreground: oklch(0.98 0.005 80);
-  --sidebar-accent: oklch(0.94 0.015 80);
-  --sidebar-accent-foreground: oklch(0.22 0.01 250);
-  --sidebar-border: oklch(0.90 0.015 80);
-  --sidebar-ring: oklch(0.44 0.16 20);
+  --chart-1: hsl(354 70% 38%);
+  --chart-2: hsl(43 56% 52%);
+  --chart-3: hsl(135 45% 42%);
+  --chart-4: hsl(0 100% 65%);
+  --chart-5: hsl(220 30% 40%);
+  --sidebar: hsl(40 50% 98%);
+  --sidebar-foreground: hsl(0 0% 18%);
+  --sidebar-primary: hsl(354 70% 38%);
+  --sidebar-primary-foreground: hsl(40 50% 98%);
+  --sidebar-accent: hsl(38 18% 91%);
+  --sidebar-accent-foreground: hsl(0 0% 18%);
+  --sidebar-border: hsl(36 20% 88%);
+  --sidebar-ring: hsl(354 70% 38%);
 }
 
 @layer base {
