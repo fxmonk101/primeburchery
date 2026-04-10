@@ -100,12 +100,14 @@ export function CartDrawer() {
                   <span className="font-button font-semibold">Subtotal</span>
                   <span className="font-price text-xl font-bold text-crimson">${sub.toFixed(2)}</span>
                 </div>
-                <Button variant="hero" size="xl" className="w-full">
-                  Checkout — ${sub.toFixed(2)}
-                </Button>
+                <Link to="/checkout" onClick={closeCart}>
+                  <Button variant="hero" size="xl" className="w-full">
+                    Checkout — ${sub.toFixed(2)}
+                  </Button>
+                </Link>
                 <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
                   <span>🔒</span>
-                  <span>Secure checkout powered by Stripe</span>
+                  <span>Secure checkout · Bank Transfer · CashApp · Zelle</span>
                 </div>
               </div>
             )}

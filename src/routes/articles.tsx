@@ -1,26 +1,16 @@
-import React from 'react';
+import { createFileRoute } from '@tanstack/react-router';
 
-const Articles = () => {
-  // Example articles data
-  const articles = [
-    { id: 1, title: 'Article One', content: 'Content for article one.' },
-    { id: 2, title: 'Article Two', content: 'Content for article two.' },
-    { id: 3, title: 'Article Three', content: 'Content for article three.' },
-  ];
+export const Route = createFileRoute('/articles')({
+  component: ArticlesPage,
+});
 
+function ArticlesPage() {
   return (
-    <div>
-      <h1>Articles Listing</h1>
-      <ul>
-        {articles.map(article => (
-          <li key={article.id}>
-            <h2>{article.title}</h2>
-            <p>{article.content}</p>
-          </li>
-        ))}
-      </ul>
+    <div className="min-h-screen py-16">
+      <div className="max-w-3xl mx-auto px-4">
+        <h1 className="text-3xl font-heading font-bold mb-4">Articles</h1>
+        <p className="text-muted-foreground">Articles coming soon.</p>
+      </div>
     </div>
   );
-};
-
-export default Articles;
+}

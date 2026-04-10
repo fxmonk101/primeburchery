@@ -27,11 +27,11 @@ export function Navbar() {
             </span>
           </div>
           <div className="flex items-center gap-4 font-button">
-            <span className="cursor-pointer hover:text-white transition-colors">Track Order</span>
+            <Link to="/track-order" className="cursor-pointer hover:text-white transition-colors">Track Order</Link>
             <span className="text-white/30">|</span>
-            <span className="cursor-pointer hover:text-white transition-colors">FAQ</span>
+            <Link to="/faq" className="cursor-pointer hover:text-white transition-colors">FAQ</Link>
             <span className="text-white/30">|</span>
-            <span className="cursor-pointer hover:text-white transition-colors">Our Farms</span>
+            <Link to="/our-farms" className="cursor-pointer hover:text-white transition-colors">Our Farms</Link>
           </div>
         </div>
       </div>
@@ -45,29 +45,21 @@ export function Navbar() {
       <header className="sticky top-0 z-50 bg-card/98 backdrop-blur-lg border-b border-border shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-18 sm:h-20">
-            {/* Mobile menu button */}
             <button onClick={() => setMobileOpen(true)} className="p-2 hover:bg-accent rounded-full transition-colors lg:hidden">
               <Menu className="w-5 h-5 text-foreground" />
             </button>
 
-            {/* Logo */}
             <Link to="/" className="flex items-center gap-2 shrink-0">
               <img src={logo} alt="PrimeButchery — Premium Grain-Fed Meats" className="h-12 sm:h-16 w-auto" />
             </Link>
 
-            {/* Desktop Search Bar */}
             <div className="hidden lg:flex flex-1 max-w-md mx-8">
               <div className="relative w-full">
                 <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <input
-                  type="text"
-                  placeholder="Search premium cuts..."
-                  className="w-full pl-10 pr-4 py-2.5 rounded-full border border-border bg-background text-sm font-body focus:outline-none focus:ring-2 focus:ring-crimson/30 focus:border-crimson transition-all"
-                />
+                <input type="text" placeholder="Search premium cuts..." className="w-full pl-10 pr-4 py-2.5 rounded-full border border-border bg-background text-sm font-body focus:outline-none focus:ring-2 focus:ring-crimson/30 focus:border-crimson transition-all" />
               </div>
             </div>
 
-            {/* Right Icons */}
             <div className="flex items-center gap-1 sm:gap-2">
               <button onClick={() => setSearchOpen(!searchOpen)} className="p-2 hover:bg-accent rounded-full transition-colors lg:hidden">
                 <Search className="w-5 h-5 text-foreground" />
@@ -139,7 +131,7 @@ export function Navbar() {
                               <span className="text-lg">🆕</span> New Arrivals
                             </Link>
                             <Link to="/products" onClick={() => setShopOpen(false)} className="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-accent transition-colors text-sm font-button">
-                              <span className="text-lg">🍽️</span> Chef's Picks
+                              <span className="text-lg">🍽️</span> {"Chef's Picks"}
                             </Link>
                           </div>
 
@@ -163,10 +155,10 @@ export function Navbar() {
                 </AnimatePresence>
               </div>
 
-              <span className="px-4 py-3 text-sm font-button font-medium text-foreground hover:text-crimson transition-colors uppercase tracking-wide cursor-pointer">Our Farms</span>
-              <span className="px-4 py-3 text-sm font-button font-medium text-foreground hover:text-crimson transition-colors uppercase tracking-wide cursor-pointer">Blog</span>
-              <span className="px-4 py-3 text-sm font-button font-medium text-foreground hover:text-crimson transition-colors uppercase tracking-wide cursor-pointer">About</span>
-              <span className="px-4 py-3 text-sm font-button font-medium text-foreground hover:text-crimson transition-colors uppercase tracking-wide cursor-pointer">Contact</span>
+              <Link to="/our-farms" className="px-4 py-3 text-sm font-button font-medium text-foreground hover:text-crimson transition-colors uppercase tracking-wide" activeProps={{ className: 'text-crimson' }}>Our Farms</Link>
+              <Link to="/blog" className="px-4 py-3 text-sm font-button font-medium text-foreground hover:text-crimson transition-colors uppercase tracking-wide" activeProps={{ className: 'text-crimson' }}>Blog</Link>
+              <Link to="/about" className="px-4 py-3 text-sm font-button font-medium text-foreground hover:text-crimson transition-colors uppercase tracking-wide" activeProps={{ className: 'text-crimson' }}>About</Link>
+              <Link to="/contact" className="px-4 py-3 text-sm font-button font-medium text-foreground hover:text-crimson transition-colors uppercase tracking-wide" activeProps={{ className: 'text-crimson' }}>Contact</Link>
             </div>
           </div>
         </nav>
@@ -203,7 +195,6 @@ export function Navbar() {
                 <button onClick={() => setMobileOpen(false)}><X className="w-6 h-6" /></button>
               </div>
 
-              {/* Mobile search */}
               <div className="p-4 border-b border-border">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -223,10 +214,10 @@ export function Navbar() {
                     </Link>
                   ))}
                   <div className="my-2 border-t border-border" />
-                  <span className="text-base font-button py-3 px-3 rounded-lg hover:bg-accent transition-colors cursor-pointer">Our Farms</span>
-                  <span className="text-base font-button py-3 px-3 rounded-lg hover:bg-accent transition-colors cursor-pointer">Blog</span>
-                  <span className="text-base font-button py-3 px-3 rounded-lg hover:bg-accent transition-colors cursor-pointer">About</span>
-                  <span className="text-base font-button py-3 px-3 rounded-lg hover:bg-accent transition-colors cursor-pointer">Contact</span>
+                  <Link to="/our-farms" onClick={() => setMobileOpen(false)} className="text-base font-button py-3 px-3 rounded-lg hover:bg-accent transition-colors">Our Farms</Link>
+                  <Link to="/blog" onClick={() => setMobileOpen(false)} className="text-base font-button py-3 px-3 rounded-lg hover:bg-accent transition-colors">Blog</Link>
+                  <Link to="/about" onClick={() => setMobileOpen(false)} className="text-base font-button py-3 px-3 rounded-lg hover:bg-accent transition-colors">About</Link>
+                  <Link to="/contact" onClick={() => setMobileOpen(false)} className="text-base font-button py-3 px-3 rounded-lg hover:bg-accent transition-colors">Contact</Link>
                 </div>
               </nav>
               <div className="p-6 border-t border-border">

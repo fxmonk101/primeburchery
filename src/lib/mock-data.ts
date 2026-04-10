@@ -250,13 +250,14 @@ export const TRUST_BADGES = [
 ];
 
 export const SOCIAL_PROOF_NOTIFICATIONS = [
-  '🛒 James from Lagos just ordered A5 Wagyu Ribeye',
-  '🛒 Amina from Abuja ordered the Steak Lover\'s Box',
-  '🛒 David from Douala ordered Tomahawk Steak',
-  '⭐ Sarah just left a 5-star review on Filet Mignon',
+  '🛒 James from Austin, TX just ordered A5 Wagyu Ribeye',
+  '🛒 Sarah from New York, NY ordered the Filet Mignon Trio',
+  '🛒 David from Denver, CO ordered Tomahawk Steak',
+  '⭐ Michelle from Chicago, IL left a 5-star review on Wagyu Ribeye',
   '🔥 18 people viewing A5 Wagyu Ribeye right now',
-  '🎁 Michael just ordered the BBQ Master Gift Box',
-  '✅ Fatima from Accra just received her order',
+  '🎁 Michael from Miami, FL just ordered the BBQ Gift Box',
+  '✅ Robert from Seattle, WA just received his order',
+  '🛒 Amanda from Los Angeles, CA ordered Frenched Lamb Rack',
 ];
 
 export const REVIEW_TICKER = [
