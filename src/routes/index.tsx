@@ -57,9 +57,16 @@ function HomePage() {
                   Shop Premium Cuts <ArrowRight className="w-5 h-5" />
                 </Button>
               </Link>
-              <Button variant="heroOutline" size="xl" className="text-white border-white/30 hover:bg-white/10 hover:text-white text-base">
-                Our Farms
-              </Button>
+              <Link to="/products">
+                <Button variant="hero" size="xl" className="gap-2 text-base">
+                  Shop Premium Cuts <ArrowRight className="w-5 h-5" />
+                </Button>
+              </Link>
+              <Link to="/our-farms">
+                <Button variant="heroOutline" size="xl" className="text-white border-white/30 hover:bg-white/10 hover:text-white text-base">
+                  Our Farms
+                </Button>
+              </Link>
             </div>
             {/* Stats bar */}
             <div className="flex flex-wrap gap-8 mt-10 pt-8 border-t border-white/20">

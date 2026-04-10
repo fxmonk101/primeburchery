@@ -279,6 +279,61 @@ function ProductDetailPage() {
         {/* Reviews */}
         <section className="mb-16">
           <h2 className="text-2xl font-heading font-bold mb-6">What Our Customers Say</h2>
+          
+          {/* Rating breakdown */}
+          <div className="grid sm:grid-cols-2 gap-8 mb-8">
+            <div className="bg-cream rounded-2xl p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="font-price text-4xl font-bold text-crimson">{product.rating}</span>
+                <div>
+                  <div className="flex">{[...Array(5)].map((_, i) => <Star key={i} className={`w-5 h-5 ${i < Math.floor(product.rating) ? 'fill-gold text-gold' : 'text-border'}`} />)}</div>
+                  <p className="text-sm text-muted-foreground mt-1">{product.reviewCount} reviews</p>
+                </div>
+              </div>
+              {[5, 4, 3, 2, 1].map((stars) => {
+                const pct = stars === 5 ? 82 : stars === 4 ? 12 : stars === 3 ? 4 : stars === 2 ? 1 : 1;
+                return (
+                  <div key={stars} className="flex items-center gap-2 mb-1">
+                    <span className="text-xs font-button w-4">{stars}★</span>
+                    <div className="flex-1 h-2 bg-border rounded-full overflow-hidden"><div className="h-full bg-gold rounded-full" style={{ width: `${pct}%` }} /></div>
+                    <span className="text-xs text-muted-foreground w-8 text-right">{pct}%</span>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Review Form */}
+            <div className="bg-cream rounded-2xl p-6">
+              <h3 className="font-heading text-lg font-bold mb-4">Write a Review</h3>
+              <form onSubmit={(e) => { e.preventDefault(); alert('Thank you for your review! It will appear after moderation.'); }} className="space-y-3">
+                <div>
+                  <label className="text-xs font-button font-semibold mb-1 block">Your Name</label>
+                  <input type="text" required className="w-full px-3 py-2 rounded-xl border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-crimson/30" placeholder="John S." />
+                </div>
+                <div>
+                  <label className="text-xs font-button font-semibold mb-1 block">Rating</label>
+                  <div className="flex gap-1">
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <button key={s} type="button" className="text-gold hover:scale-110 transition-transform">
+                        <Star className="w-6 h-6 fill-gold" />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label className="text-xs font-button font-semibold mb-1 block">Review Title</label>
+                  <input type="text" required className="w-full px-3 py-2 rounded-xl border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-crimson/30" placeholder="Amazing quality!" />
+                </div>
+                <div>
+                  <label className="text-xs font-button font-semibold mb-1 block">Your Review</label>
+                  <textarea required rows={3} className="w-full px-3 py-2 rounded-xl border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-crimson/30 resize-none" placeholder="Share your experience..." />
+                </div>
+                <button type="submit" className="w-full px-4 py-2.5 bg-crimson text-white rounded-full text-sm font-button font-semibold hover:bg-crimson/90 transition-colors">Submit Review</button>
+              </form>
+            </div>
+          </div>
+
+          {/* Review list */}
           {productReviews.length > 0 ? (
             <div className="space-y-4">
               {productReviews.map((review) => (
