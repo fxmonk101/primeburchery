@@ -226,7 +226,7 @@ function HomePage() {
             ))}
           </div>
           <div className="text-center mt-8">
-            <Button variant="heroOutline" size="lg" className="gap-2">Meet All Our Farms <ArrowRight className="w-4 h-4" /></Button>
+            <Link to="/our-farms"><Button variant="heroOutline" size="lg" className="gap-2">Meet All Our Farms <ArrowRight className="w-4 h-4" /></Button></Link>
           </div>
         </div>
       </section>
