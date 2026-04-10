@@ -85,7 +85,7 @@ function AboutPage() {
               { icon: <Award className="w-8 h-8 text-gold" />, title: 'Uncompromising Quality', desc: 'Every cut is hand-selected by expert butchers. We never settle for less than the finest.' },
               { icon: <Leaf className="w-8 h-8 text-deep-green" />, title: 'Sustainable Sourcing', desc: 'We partner with farms committed to regenerative agriculture and ethical animal husbandry.' },
               { icon: <ShieldCheck className="w-8 h-8 text-crimson" />, title: 'Full Transparency', desc: 'From farm to your front door, every step is documented and verifiable.' },
-              { icon: <Heart className="w-8 h-8 text-sale" />, title: 'Customer Obsession', desc: '100% satisfaction guarantee. If you're not happy, we make it right — no questions asked.' },
+              { icon: <Heart className="w-8 h-8 text-sale" />, title: 'Customer Obsession', desc: '100% satisfaction guarantee. If you\'re not happy, we make it right — no questions asked.' },
             ].map((v, i) => (
               <motion.div key={v.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1, duration: 0.5 }} className="text-center">
                 <div className="w-16 h-16 rounded-2xl bg-card flex items-center justify-center mx-auto mb-4 shadow-sm">{v.icon}</div>
