@@ -27,10 +27,10 @@ export function Footer() {
           <div className="lg:col-span-2">
             <img src={logo} alt="PrimeButchery" className="h-14 w-auto brightness-0 invert mb-4" />
             <p className="text-sm text-white/50 leading-relaxed mb-2 font-heading italic">
-              "Grain-Fed. Chef-Trusted. Unforgettable."
+              {"\"Grain-Fed. Chef-Trusted. Unforgettable.\""}
             </p>
             <p className="text-sm text-white/50 leading-relaxed mb-6 max-w-sm">
-              Premium grain-fed meats, sourced transparently from verified farms worldwide. Delivered fresh with cold-chain precision.
+              Premium grain-fed meats, sourced transparently from verified farms worldwide. Delivered fresh with cold-chain precision to all 50 US states.
             </p>
             <div className="space-y-2.5">
               <div className="flex items-center gap-2.5 text-sm text-white/50">
@@ -43,10 +43,9 @@ export function Footer() {
               </div>
               <div className="flex items-center gap-2.5 text-sm text-white/50">
                 <MapPin className="w-4 h-4 text-gold" />
-                <span>Mon-Fri 8am-6pm EST</span>
+                <span>United States · Mon-Fri 8am-6pm EST</span>
               </div>
             </div>
-            {/* Social icons */}
             <div className="flex items-center gap-3 mt-5">
               {['Instagram', 'Facebook', 'Twitter'].map((s) => (
                 <span key={s} className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-xs font-button text-white/60 hover:bg-white/20 cursor-pointer transition-colors">
@@ -71,12 +70,11 @@ export function Footer() {
           <div>
             <h4 className="font-button font-semibold mb-5 text-white/90 text-sm uppercase tracking-wider">Company</h4>
             <ul className="space-y-3">
-              <li><span className="text-sm text-white/50 cursor-pointer hover:text-gold transition-colors">Our Farms</span></li>
-              <li><span className="text-sm text-white/50 cursor-pointer hover:text-gold transition-colors">About Us</span></li>
-              <li><span className="text-sm text-white/50 cursor-pointer hover:text-gold transition-colors">Blog</span></li>
-              <li><span className="text-sm text-white/50 cursor-pointer hover:text-gold transition-colors">Press</span></li>
-              <li><span className="text-sm text-white/50 cursor-pointer hover:text-gold transition-colors">Careers</span></li>
-              <li><span className="text-sm text-white/50 cursor-pointer hover:text-gold transition-colors">Contact</span></li>
+              <li><Link to="/our-farms" className="text-sm text-white/50 hover:text-gold transition-colors">Our Farms</Link></li>
+              <li><Link to="/about" className="text-sm text-white/50 hover:text-gold transition-colors">About Us</Link></li>
+              <li><Link to="/blog" className="text-sm text-white/50 hover:text-gold transition-colors">Blog</Link></li>
+              <li><Link to="/careers" className="text-sm text-white/50 hover:text-gold transition-colors">Careers</Link></li>
+              <li><Link to="/contact" className="text-sm text-white/50 hover:text-gold transition-colors">Contact</Link></li>
             </ul>
           </div>
 
@@ -84,13 +82,13 @@ export function Footer() {
           <div>
             <h4 className="font-button font-semibold mb-5 text-white/90 text-sm uppercase tracking-wider">Support</h4>
             <ul className="space-y-3">
-              <li><span className="text-sm text-white/50 cursor-pointer hover:text-gold transition-colors">FAQ</span></li>
-              <li><span className="text-sm text-white/50 cursor-pointer hover:text-gold transition-colors">Track Order</span></li>
-              <li><span className="text-sm text-white/50 cursor-pointer hover:text-gold transition-colors">Shipping & Returns</span></li>
-              <li><span className="text-sm text-white/50 cursor-pointer hover:text-gold transition-colors">Satisfaction Guarantee</span></li>
-              <li><span className="text-sm text-white/50 cursor-pointer hover:text-gold transition-colors">Privacy Policy</span></li>
-              <li><span className="text-sm text-white/50 cursor-pointer hover:text-gold transition-colors">Terms of Service</span></li>
-              <li><span className="text-sm text-white/50 cursor-pointer hover:text-gold transition-colors">Refund Policy</span></li>
+              <li><Link to="/faq" className="text-sm text-white/50 hover:text-gold transition-colors">FAQ</Link></li>
+              <li><Link to="/track-order" className="text-sm text-white/50 hover:text-gold transition-colors">Track Order</Link></li>
+              <li><Link to="/shipping-returns" className="text-sm text-white/50 hover:text-gold transition-colors">Shipping & Returns</Link></li>
+              <li><Link to="/guarantee" className="text-sm text-white/50 hover:text-gold transition-colors">Satisfaction Guarantee</Link></li>
+              <li><Link to="/privacy-policy" className="text-sm text-white/50 hover:text-gold transition-colors">Privacy Policy</Link></li>
+              <li><Link to="/terms" className="text-sm text-white/50 hover:text-gold transition-colors">Terms of Service</Link></li>
+              <li><Link to="/refund-policy" className="text-sm text-white/50 hover:text-gold transition-colors">Refund Policy</Link></li>
             </ul>
           </div>
         </div>
@@ -118,12 +116,12 @@ export function Footer() {
         <div className="border-t border-white/10 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-xs text-white/30">© 2026 PrimeButchery. All rights reserved.</p>
           <div className="flex flex-wrap gap-4 text-xs text-white/30">
-            <span className="hover:text-white/50 cursor-pointer">Privacy Policy</span>
-            <span className="hover:text-white/50 cursor-pointer">Terms of Service</span>
-            <span className="hover:text-white/50 cursor-pointer">Refund Policy</span>
+            <Link to="/privacy-policy" className="hover:text-white/50">Privacy Policy</Link>
+            <Link to="/terms" className="hover:text-white/50">Terms of Service</Link>
+            <Link to="/refund-policy" className="hover:text-white/50">Refund Policy</Link>
           </div>
           <div className="flex items-center gap-2 text-xs text-white/40">
-            <span>💳</span> Visa · Mastercard · Amex · Apple Pay · Google Pay · Klarna
+            <span>💳</span> Bank Transfer · Wire Transfer · CashApp · Zelle
           </div>
         </div>
       </div>

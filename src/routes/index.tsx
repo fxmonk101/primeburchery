@@ -7,7 +7,7 @@ import { ProductCard } from '@/components/product/ProductCard';
 import { TrustBadges } from '@/components/trust/TrustBadges';
 import { SocialProofNotification } from '@/components/trust/SocialProofNotification';
 import { PRODUCT_IMAGES } from '@/lib/product-images';
-import heroImage from '@/assets/hero-steaks.jpg';
+import heroImage from '@/assets/hero-store.jpg';
 
 export const Route = createFileRoute('/')({
   component: HomePage,
