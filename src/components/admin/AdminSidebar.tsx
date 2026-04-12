@@ -8,16 +8,16 @@ import { supabase } from '@/integrations/supabase/client';
 import logo from '@/assets/logo.png';
 
 const navItems = [
-  { to: '/admin', icon: LayoutDashboard, label: 'Overview', exact: true },
-  { to: '/admin/products', icon: Package, label: 'Products' },
-  { to: '/admin/orders', icon: ShoppingCart, label: 'Orders' },
-  { to: '/admin/reviews', icon: Star, label: 'Reviews' },
-  { to: '/admin/blog', icon: FileText, label: 'Blog' },
-  { to: '/admin/coupons', icon: Tag, label: 'Coupons' },
-  { to: '/admin/farms', icon: Tractor, label: 'Farm Stories' },
-  { to: '/admin/subscribers', icon: Mail, label: 'Subscribers' },
-  { to: '/admin/admins', icon: Users, label: 'Admins' },
-] as const;
+  { to: '/admin' as string, icon: LayoutDashboard, label: 'Overview', exact: true },
+  { to: '/admin/products' as string, icon: Package, label: 'Products', exact: false },
+  { to: '/admin/orders' as string, icon: ShoppingCart, label: 'Orders', exact: false },
+  { to: '/admin/reviews' as string, icon: Star, label: 'Reviews', exact: false },
+  { to: '/admin/blog' as string, icon: FileText, label: 'Blog', exact: false },
+  { to: '/admin/coupons' as string, icon: Tag, label: 'Coupons', exact: false },
+  { to: '/admin/farms' as string, icon: Tractor, label: 'Farm Stories', exact: false },
+  { to: '/admin/subscribers' as string, icon: Mail, label: 'Subscribers', exact: false },
+  { to: '/admin/admins' as string, icon: Users, label: 'Admins', exact: false },
+];
 
 export function AdminSidebar() {
   const [collapsed, setCollapsed] = useState(false);
@@ -53,9 +53,9 @@ export function AdminSidebar() {
             : location.pathname.startsWith(item.to);
 
           return (
-            <Link
+            <a
               key={item.to}
-              to={item.to}
+              href={item.to}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                 isActive
                   ? 'bg-crimson text-white'
