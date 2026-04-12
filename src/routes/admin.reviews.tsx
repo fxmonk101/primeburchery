@@ -25,7 +25,7 @@ function AdminReviews() {
   useEffect(() => { fetchReviews(); }, [filter]);
 
   const updateReview = async (id: string, updates: Record<string, any>) => {
-    await supabase.from('reviews').update(updates).eq('id', id);
+    await supabase.from('reviews').update(updates as any).eq('id', id);
     fetchReviews();
   };
 

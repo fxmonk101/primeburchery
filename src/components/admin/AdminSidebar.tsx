@@ -65,7 +65,7 @@ export function AdminSidebar() {
             >
               <item.icon className="w-5 h-5 shrink-0" />
               {!collapsed && <span>{item.label}</span>}
-            </Link>
+            </a>
           );
         })}
       </nav>
