@@ -2,7 +2,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Plus, Minus, ShoppingBag } from 'lucide-react';
 import { useCartStore } from '@/store/cartStore';
 import { Button } from '@/components/ui/button';
-import { PRODUCT_IMAGES } from '@/lib/product-images';
 import { Link } from '@tanstack/react-router';
 
 const FREE_SHIPPING_THRESHOLD = 75;
