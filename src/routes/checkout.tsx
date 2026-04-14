@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { ShieldCheck, ArrowLeft, CreditCard, Building2, Smartphone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCartStore } from '@/store/cartStore';
-import { PRODUCT_IMAGES } from '@/lib/product-images';
+
 import { useState } from 'react';
 
 export const Route = createFileRoute('/checkout')({
@@ -178,7 +178,7 @@ function CheckoutPage() {
                   <div className="space-y-3">
                     {items.map((item) => (
                       <div key={item.product.id} className="flex gap-4 bg-card rounded-xl p-3 border border-border">
-                        <img src={PRODUCT_IMAGES[item.product.id]} alt={item.product.name} className="w-16 h-16 rounded-lg object-cover" width={64} height={64} />
+                        <img src={item.product.images?.[0] || '/placeholder.svg'} alt={item.product.name} className="w-16 h-16 rounded-lg object-cover" width={64} height={64} />
                         <div className="flex-1">
                           <p className="font-button font-semibold text-sm">{item.product.name}</p>
                           <p className="text-xs text-muted-foreground">Qty: {item.quantity}</p>

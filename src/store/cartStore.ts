@@ -1,15 +1,15 @@
 import { create } from 'zustand';
-import type { Product } from '@/lib/mock-data';
+import type { CartProduct } from '@/lib/supabase-types';
 
 export interface CartItem {
-  product: Product;
+  product: CartProduct;
   quantity: number;
 }
 
 interface CartState {
   items: CartItem[];
   isOpen: boolean;
-  addItem: (product: Product) => void;
+  addItem: (product: CartProduct) => void;
   removeItem: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   clearCart: () => void;

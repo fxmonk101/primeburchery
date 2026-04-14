@@ -2,7 +2,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Plus, Minus, ShoppingBag } from 'lucide-react';
 import { useCartStore } from '@/store/cartStore';
 import { Button } from '@/components/ui/button';
-import { PRODUCT_IMAGES } from '@/lib/product-images';
 import { Link } from '@tanstack/react-router';
 
 const FREE_SHIPPING_THRESHOLD = 75;
@@ -67,7 +66,7 @@ export function CartDrawer() {
                 items.map((item) => (
                   <div key={item.product.id} className="flex gap-4 bg-cream rounded-2xl p-3">
                     <img
-                      src={PRODUCT_IMAGES[item.product.id]}
+                      src={item.product.images?.[0] || '/placeholder.svg'}
                       alt={item.product.name}
                       className="w-20 h-20 rounded-xl object-cover"
                       loading="lazy"
