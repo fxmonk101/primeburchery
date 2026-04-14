@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { ShieldCheck, ArrowLeft, CreditCard, Building2, Smartphone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCartStore } from '@/store/cartStore';
-import { PRODUCT_IMAGES } from '@/lib/product-images';
+
 import { useState } from 'react';
 
 export const Route = createFileRoute('/checkout')({
