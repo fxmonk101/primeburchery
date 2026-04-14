@@ -1,13 +1,15 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { motion } from 'framer-motion';
-import { ArrowRight, Star, Truck, Leaf, Award, ShieldCheck, Clock, Users, ChefHat, Flame, Snowflake, UtensilsCrossed } from 'lucide-react';
+import { ArrowRight, Star, ChefHat, Flame } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { PRODUCTS, CATEGORIES, TESTIMONIALS, FARM_STORIES, REVIEW_TICKER } from '@/lib/mock-data';
+import { TESTIMONIALS, FARM_STORIES, REVIEW_TICKER } from '@/lib/mock-data';
 import { ProductCard } from '@/components/product/ProductCard';
 import { TrustBadges } from '@/components/trust/TrustBadges';
 import { SocialProofNotification } from '@/components/trust/SocialProofNotification';
-import { PRODUCT_IMAGES } from '@/lib/product-images';
 import heroImage from '@/assets/hero-store.jpg';
+import { supabase } from '@/integrations/supabase/client';
+import { useState, useEffect } from 'react';
+import type { DbProduct, DbCategory } from '@/lib/supabase-types';
 
 export const Route = createFileRoute('/')({
   component: HomePage,
@@ -29,7 +31,20 @@ const fadeUp = {
 };
 
 function HomePage() {
-  const bestsellers = PRODUCTS.filter((p) => p.isBestseller);
+  const [products, setProducts] = useState<DbProduct[]>([]);
+  const [categories, setCategories] = useState<DbCategory[]>([]);
+
+  useEffect(() => {
+    const load = async () => {
+      const [{ data: prods }, { data: cats }] = await Promise.all([
+        supabase.from('products').select('*').eq('is_active', true).limit(8),
+        supabase.from('categories').select('*').order('sort_order'),
+      ]);
+      setProducts(prods ?? []);
+      setCategories(cats ?? []);
+    };
+    load();
+  }, []);
 
   return (
     <div className="min-h-screen">
@@ -63,7 +78,6 @@ function HomePage() {
                 </Button>
               </Link>
             </div>
-            {/* Stats bar */}
             <div className="flex flex-wrap gap-8 mt-10 pt-8 border-t border-white/20">
               {[
                 { value: '12,847', label: 'Orders Delivered', icon: '🥩' },
@@ -81,17 +95,16 @@ function HomePage() {
         </div>
       </section>
 
-      {/* SECTION 2: TRUST BADGES */}
       <TrustBadges />
 
-      {/* SECTION 3: BESTSELLERS CAROUSEL */}
+      {/* BESTSELLERS */}
       <section className="py-16 sm:py-24 bg-cream">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <motion.div {...fadeUp} className="flex items-end justify-between mb-10">
             <div>
               <p className="text-xs font-button text-gold uppercase tracking-[0.2em] mb-2">Customer Favorites</p>
               <h2 className="text-3xl sm:text-4xl font-heading font-bold">
-                Our <span className="text-crimson">Bestsellers</span>
+                Our <span className="text-crimson">Premium Cuts</span>
               </h2>
               <p className="text-muted-foreground mt-2 text-sm">The cuts our customers order again and again</p>
             </div>
@@ -100,7 +113,7 @@ function HomePage() {
             </Link>
           </motion.div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-            {bestsellers.map((product, i) => (
+            {products.map((product, i) => (
               <motion.div key={product.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1, duration: 0.4 }}>
                 <ProductCard product={product} />
               </motion.div>
@@ -112,7 +125,7 @@ function HomePage() {
         </div>
       </section>
 
-      {/* SECTION 4: SHOP BY CATEGORY GRID */}
+      {/* SHOP BY CATEGORY */}
       <section className="py-16 sm:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <motion.div {...fadeUp} className="text-center mb-12">
@@ -120,15 +133,14 @@ function HomePage() {
             <h2 className="text-3xl sm:text-4xl font-heading font-bold">Shop Our Collections</h2>
           </motion.div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {CATEGORIES.map((cat, i) => (
+            {categories.map((cat, i) => (
               <motion.div key={cat.slug} initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: i * 0.06, duration: 0.4 }}>
                 <Link to="/products" className="block group">
                   <div className="relative bg-charcoal rounded-2xl overflow-hidden aspect-[4/3] flex items-end p-5 hover:shadow-xl transition-all duration-300">
                     <div className="absolute inset-0 bg-gradient-to-t from-charcoal/90 via-charcoal/40 to-charcoal/10" />
-                    <div className="absolute top-4 right-4 text-3xl">{cat.emoji}</div>
                     <div className="relative z-10">
                       <h3 className="font-heading text-base sm:text-lg font-bold text-white group-hover:text-gold transition-colors">{cat.name}</h3>
-                      <p className="text-xs text-white/60 font-button mt-1">{cat.productCount} products →</p>
+                      <p className="text-xs text-white/60 font-button mt-1">View collection →</p>
                     </div>
                   </div>
                 </Link>
@@ -138,7 +150,7 @@ function HomePage() {
         </div>
       </section>
 
-      {/* SECTION 5: HOW IT WORKS */}
+      {/* HOW IT WORKS */}
       <section className="py-16 sm:py-24 bg-cream">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <motion.div {...fadeUp} className="text-center mb-14">
@@ -147,7 +159,7 @@ function HomePage() {
           </motion.div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
-              { icon: '🛍️', step: '01', title: 'Browse & Select', desc: 'Choose from 60+ premium cuts sourced from verified farms worldwide.' },
+              { icon: '🛍️', step: '01', title: 'Browse & Select', desc: 'Choose from 90+ premium cuts sourced from verified farms worldwide.' },
               { icon: '🕐', step: '02', title: 'Order by 12pm', desc: 'Place your order before noon for same-day processing and dispatch.' },
               { icon: '❄️', step: '03', title: 'Cold-Chain Delivery', desc: 'Packed with dry ice in insulated boxes. Arrives fresh — guaranteed.' },
               { icon: '🍽️', step: '04', title: 'Cook & Enjoy', desc: 'Not happy? Full refund within 7 days. No questions asked.' },
@@ -163,41 +175,7 @@ function HomePage() {
         </div>
       </section>
 
-      {/* SECTION 6: WAGYU FEATURE BANNER */}
-      <section className="py-16 sm:py-24 bg-charcoal text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <motion.div {...fadeUp}>
-              <p className="text-xs font-button text-gold uppercase tracking-[0.2em] mb-3">World's Finest Beef</p>
-              <h2 className="text-3xl sm:text-4xl font-heading font-bold text-gold mb-4">
-                Discover A5 Japanese Wagyu
-              </h2>
-              <p className="text-white/70 leading-relaxed mb-6">
-                Our A5 Japanese Wagyu scores BMS 10–12 — the highest possible marbling grade. Sourced directly from Kagoshima Prefecture, Japan. Each cut is individually certified and traceable.
-              </p>
-              <div className="flex items-center gap-2 mb-6">
-                {[...Array(5)].map((_, j) => <Star key={j} className="w-5 h-5 fill-gold text-gold" />)}
-                <span className="text-sm text-white/70 ml-1">5.0 from 94 reviews</span>
-              </div>
-              <Link to="/products">
-                <Button variant="gold" size="xl" className="gap-2">
-                  Shop Wagyu Collection <ArrowRight className="w-5 h-5" />
-                </Button>
-              </Link>
-            </motion.div>
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="relative">
-              <div className="aspect-square rounded-3xl overflow-hidden">
-                <img src={PRODUCT_IMAGES['2']} alt="A5 Japanese Wagyu Ribeye" className="w-full h-full object-cover" width={600} height={600} />
-              </div>
-              <div className="absolute -bottom-4 -left-4 bg-gold text-charcoal px-5 py-3 rounded-2xl shadow-lg">
-                <p className="text-xs font-button font-bold uppercase tracking-wider">BMS 10-12 Certified</p>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* SECTION 7: FARM TRANSPARENCY */}
+      {/* FARM TRANSPARENCY */}
       <section className="py-16 sm:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <motion.div {...fadeUp} className="text-center mb-12">
@@ -226,7 +204,7 @@ function HomePage() {
         </div>
       </section>
 
-      {/* SECTION 8: CHEF ENDORSEMENTS */}
+      {/* CHEF ENDORSEMENTS */}
       <section className="py-16 sm:py-24 bg-charcoal text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <motion.div {...fadeUp} className="text-center mb-12">
@@ -255,7 +233,7 @@ function HomePage() {
         </div>
       </section>
 
-      {/* SECTION 9: LIVE REVIEW TICKER */}
+      {/* LIVE REVIEW TICKER */}
       <section className="py-6 bg-cream border-y border-border overflow-hidden">
         <div className="relative">
           <motion.div
@@ -276,7 +254,7 @@ function HomePage() {
         </div>
       </section>
 
-      {/* SECTION 10: PRESS / AS FEATURED IN */}
+      {/* PRESS */}
       <section className="py-12">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center">
           <p className="text-xs font-button text-muted-foreground uppercase tracking-[0.2em] mb-6">As Featured In</p>
@@ -288,7 +266,7 @@ function HomePage() {
         </div>
       </section>
 
-      {/* SECTION 11: GUARANTEE */}
+      {/* GUARANTEE */}
       <section className="py-14 sm:py-18 bg-cream">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="grid sm:grid-cols-3 gap-6">
@@ -309,7 +287,7 @@ function HomePage() {
         </div>
       </section>
 
-      {/* SECTION 12: NEWSLETTER CTA */}
+      {/* NEWSLETTER */}
       <section className="py-16 sm:py-24 bg-crimson">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
           <motion.div {...fadeUp}>
@@ -320,21 +298,14 @@ function HomePage() {
               Get 10% off your first order, exclusive recipes, and early access to new cuts.
             </p>
             <div className="flex gap-2 max-w-md mx-auto">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="flex-1 px-5 py-3 rounded-full bg-white/20 border border-white/30 text-white placeholder:text-white/60 text-sm focus:outline-none focus:bg-white/30"
-              />
-              <button className="px-6 py-3 bg-gold text-charcoal rounded-full text-sm font-button font-bold hover:bg-gold/90 transition-colors whitespace-nowrap">
-                Get 10% Off →
-              </button>
+              <input type="email" placeholder="Enter your email" className="flex-1 px-5 py-3 rounded-full bg-white/20 border border-white/30 text-white placeholder:text-white/60 text-sm focus:outline-none focus:bg-white/30" />
+              <button className="px-6 py-3 bg-gold text-charcoal rounded-full text-sm font-button font-bold hover:bg-gold/90 transition-colors whitespace-nowrap">Get 10% Off →</button>
             </div>
             <p className="text-xs text-white/50 mt-3">🔒 No spam. Unsubscribe any time.</p>
           </motion.div>
         </div>
       </section>
 
-      {/* Social Proof Notification */}
       <SocialProofNotification />
     </div>
   );
