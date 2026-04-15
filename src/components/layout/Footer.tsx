@@ -35,11 +35,11 @@ export function Footer() {
             <div className="space-y-2.5">
               <div className="flex items-center gap-2.5 text-sm text-white/50">
                 <Phone className="w-4 h-4 text-gold" />
-                <span>(800) 555-MEAT</span>
+                <span>+1 2346008433</span>
               </div>
               <div className="flex items-center gap-2.5 text-sm text-white/50">
                 <Mail className="w-4 h-4 text-gold" />
-                <span>orders@primebutchery.com</span>
+                <span>orders@theprimebutchery.com</span>
               </div>
               <div className="flex items-center gap-2.5 text-sm text-white/50">
                 <MapPin className="w-4 h-4 text-gold" />

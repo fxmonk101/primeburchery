@@ -20,10 +20,10 @@ export function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex justify-between items-center">
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1.5">
-              <Phone className="w-3 h-3" /> (800) 555-MEAT
+              <Phone className="w-3 h-3" /> +1 2346008433
             </span>
             <span className="flex items-center gap-1.5">
-              <Mail className="w-3 h-3" /> orders@primebutchery.com
+              <Mail className="w-3 h-3" /> orders@theprimebutchery.com
             </span>
           </div>
           <div className="flex items-center gap-4 font-button">
@@ -223,7 +223,7 @@ export function Navbar() {
               <div className="p-6 border-t border-border">
                 <div className="flex items-center gap-3 text-sm text-muted-foreground">
                   <Phone className="w-4 h-4" />
-                  <span>(800) 555-MEAT</span>
+                  <span>+1 2346008433</span>
                 </div>
               </div>
             </motion.div>
