@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { motion } from 'framer-motion';
-import { ArrowRight, Star, ChefHat, Flame } from 'lucide-react';
+import { ArrowRight, Star, ChefHat, Flame, ShoppingBag, Clock, Snowflake, UtensilsCrossed, Lock, BadgeCheck, Truck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { TESTIMONIALS, FARM_STORIES, REVIEW_TICKER } from '@/lib/mock-data';
 import { ProductCard } from '@/components/product/ProductCard';
@@ -159,14 +159,16 @@ function HomePage() {
           </motion.div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
-              { icon: '🛍️', step: '01', title: 'Browse & Select', desc: 'Choose from 90+ premium cuts sourced from verified farms worldwide.' },
-              { icon: '🕐', step: '02', title: 'Order by 12pm', desc: 'Place your order before noon for same-day processing and dispatch.' },
-              { icon: '❄️', step: '03', title: 'Cold-Chain Delivery', desc: 'Packed with dry ice in insulated boxes. Arrives fresh — guaranteed.' },
-              { icon: '🍽️', step: '04', title: 'Cook & Enjoy', desc: 'Not happy? Full refund within 7 days. No questions asked.' },
+              { Icon: ShoppingBag, step: '01', title: 'Browse & Select', desc: 'Choose from 90+ premium cuts sourced from verified farms worldwide.' },
+              { Icon: Clock, step: '02', title: 'Order by 12pm', desc: 'Place your order before noon for same-day processing and dispatch.' },
+              { Icon: Snowflake, step: '03', title: 'Cold-Chain Delivery', desc: 'Packed with dry ice in insulated boxes. Arrives fresh — guaranteed.' },
+              { Icon: UtensilsCrossed, step: '04', title: 'Cook & Enjoy', desc: 'Not happy? Full refund within 7 days. No questions asked.' },
             ].map((item, i) => (
               <motion.div key={item.step} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.12, duration: 0.5 }} className="relative text-center">
                 <div className="text-5xl font-heading font-bold text-crimson/10 mb-2">{item.step}</div>
-                <div className="text-4xl mb-4">{item.icon}</div>
+                <div className="mb-4 inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-crimson/10">
+                  <item.Icon className="w-7 h-7 text-crimson" strokeWidth={1.6} />
+                </div>
                 <h3 className="font-heading text-lg font-bold mb-3">{item.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
               </motion.div>
@@ -271,12 +273,14 @@ function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="grid sm:grid-cols-3 gap-6">
             {[
-              { icon: '🔒', title: 'Secure Payment', desc: 'All cards accepted. Powered by Stripe with 256-bit SSL encryption.' },
-              { icon: '💯', title: '100% Satisfaction Guarantee', desc: 'Not happy? Full refund within 7 days, no questions asked.' },
-              { icon: '🚚', title: 'Free Delivery Over $75', desc: 'Cold-chain insulated shipping. Order by 12pm for next-day dispatch.' },
+              { Icon: Lock, title: 'Secure Payment', desc: 'All cards accepted. Powered by Stripe with 256-bit SSL encryption.' },
+              { Icon: BadgeCheck, title: '100% Satisfaction Guarantee', desc: 'Not happy? Full refund within 7 days, no questions asked.' },
+              { Icon: Truck, title: 'Free Delivery Over $75', desc: 'Cold-chain insulated shipping. Order by 12pm for next-day dispatch.' },
             ].map((item, i) => (
               <motion.div key={item.title} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1, duration: 0.4 }} className="flex items-start gap-4 bg-card rounded-2xl p-6 border border-border">
-                <span className="text-3xl shrink-0">{item.icon}</span>
+                <div className="w-12 h-12 rounded-xl bg-crimson/10 flex items-center justify-center shrink-0">
+                  <item.Icon className="w-6 h-6 text-crimson" strokeWidth={1.6} />
+                </div>
                 <div>
                   <h3 className="font-button font-bold text-sm mb-1 uppercase tracking-wide">{item.title}</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
