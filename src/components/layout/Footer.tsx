@@ -1,7 +1,16 @@
 import { Link } from '@tanstack/react-router';
-import { CATEGORIES, TRUST_BADGES } from '@/lib/mock-data';
-import { Mail, Phone, MapPin } from 'lucide-react';
+import { CATEGORIES } from '@/lib/mock-data';
+import { Mail, Phone, MapPin, Wheat, ShieldCheck, BadgeCheck, Truck, Award, ChefHat } from 'lucide-react';
 import logo from '@/assets/logo.png';
+
+const FOOTER_BADGES = [
+  { Icon: Wheat, label: '100% Grain-Fed Certified' },
+  { Icon: ShieldCheck, label: 'SSL Secured Checkout' },
+  { Icon: BadgeCheck, label: 'Verified Supplier Network' },
+  { Icon: Truck, label: 'Cold-Chain Delivery' },
+  { Icon: Award, label: '100% Satisfaction Guarantee' },
+  { Icon: ChefHat, label: 'Chef-Approved Quality' },
+];
 
 export function Footer() {
   return (
@@ -10,9 +19,9 @@ export function Footer() {
       <div className="border-b border-white/10 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-            {TRUST_BADGES.map((b) => (
+            {FOOTER_BADGES.map((b) => (
               <div key={b.label} className="flex items-center gap-2.5 justify-center text-center">
-                <span className="text-2xl">{b.icon}</span>
+                <b.Icon className="w-5 h-5 text-gold" strokeWidth={1.8} />
                 <span className="text-xs font-button font-medium text-white/70">{b.label}</span>
               </div>
             ))}
@@ -35,11 +44,11 @@ export function Footer() {
             <div className="space-y-2.5">
               <div className="flex items-center gap-2.5 text-sm text-white/50">
                 <Phone className="w-4 h-4 text-gold" />
-                <span>(800) 555-MEAT</span>
+                <span>+1 2346008433</span>
               </div>
               <div className="flex items-center gap-2.5 text-sm text-white/50">
                 <Mail className="w-4 h-4 text-gold" />
-                <span>orders@primebutchery.com</span>
+                <span>orders@theprimebutchery.com</span>
               </div>
               <div className="flex items-center gap-2.5 text-sm text-white/50">
                 <MapPin className="w-4 h-4 text-gold" />

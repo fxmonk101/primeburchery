@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { motion } from 'framer-motion';
-import { Star, ShoppingCart, Heart, Minus, Plus, Eye, MessageSquare } from 'lucide-react';
+import { Star, ShoppingCart, Heart, Minus, Plus, Eye, MessageSquare, ShieldCheck, Truck, Award, Wheat } from 'lucide-react';
 import { useCartStore } from '@/store/cartStore';
 import { Button } from '@/components/ui/button';
 import { useState, useEffect } from 'react';
@@ -8,11 +8,22 @@ import { ProductCard } from '@/components/product/ProductCard';
 import { supabase } from '@/integrations/supabase/client';
 import type { DbProduct } from '@/lib/supabase-types';
 
+interface Review {
+  id: string;
+  reviewer_name: string | null;
+  rating: number;
+  title: string | null;
+  body: string | null;
+  is_verified_purchase: boolean | null;
+  helpful_count: number | null;
+  created_at: string | null;
+}
+
 export const Route = createFileRoute('/products/$slug')({
   component: ProductDetailPage,
   head: () => ({
     meta: [
-      { title: 'Product — PrimeButchery' },
+      { title: 'Product — The Prime Butchery' },
       { name: 'description', content: 'Premium grain-fed meats delivered fresh.' },
     ],
   }),
@@ -33,19 +44,30 @@ function ProductDetailPage() {
   const [qty, setQty] = useState(1);
   const [product, setProduct] = useState<DbProduct | null>(null);
   const [related, setRelated] = useState<DbProduct[]>([]);
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeImage, setActiveImage] = useState(0);
+  const [selectedWeight, setSelectedWeight] = useState(0);
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [reviewForm, setReviewForm] = useState({ name: '', title: '', body: '', rating: 5 });
   const [submittingReview, setSubmittingReview] = useState(false);
 
   useEffect(() => {
     const load = async () => {
+      setLoading(true);
+      setActiveImage(0);
+      setSelectedWeight(0);
       const { data } = await supabase.from('products').select('*').eq('slug', slug).eq('is_active', true).single();
       setProduct(data);
-      if (data?.category_id) {
-        const { data: rel } = await supabase.from('products').select('*').eq('category_id', data.category_id).neq('id', data.id).eq('is_active', true).limit(4);
+      if (data) {
+        const [{ data: rel }, { data: revs }] = await Promise.all([
+          data.category_id
+            ? supabase.from('products').select('*').eq('category_id', data.category_id).neq('id', data.id).eq('is_active', true).limit(4)
+            : Promise.resolve({ data: [] }),
+          supabase.from('reviews').select('*').eq('product_id', data.id).eq('is_approved', true).order('created_at', { ascending: false }).limit(20),
+        ]);
         setRelated(rel ?? []);
+        setReviews((revs as Review[]) ?? []);
       }
       setLoading(false);
     };
@@ -67,6 +89,8 @@ function ProductDetailPage() {
 
   const images = product.images?.filter(Boolean) ?? [];
   const currentImage = images[activeImage] || images[0];
+  const weightOptions = product.weight_options?.filter(Boolean) ?? [];
+  const avgRating = reviews.length > 0 ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length : 0;
 
   const handleAddToCart = () => {
     for (let i = 0; i < qty; i++) addItem({ id: product.id, name: product.name, slug: product.slug, price: product.price, images: product.images, short_description: product.short_description });
@@ -116,9 +140,9 @@ function ProductDetailPage() {
             </div>
             {/* Thumbnail gallery */}
             {images.length > 1 && (
-              <div className="flex gap-2 overflow-x-auto">
+              <div className="flex gap-2 overflow-x-auto pb-2">
                 {images.map((img, i) => (
-                  <button key={i} onClick={() => setActiveImage(i)} className={`w-16 h-16 rounded-xl overflow-hidden border-2 shrink-0 transition-colors ${activeImage === i ? 'border-crimson' : 'border-border hover:border-crimson/30'}`}>
+                  <button key={i} onClick={() => setActiveImage(i)} className={`w-20 h-20 rounded-xl overflow-hidden border-2 shrink-0 transition-all ${activeImage === i ? 'border-crimson ring-2 ring-crimson/20' : 'border-border hover:border-crimson/30'}`}>
                     <img src={img} alt="" className="w-full h-full object-cover" />
                   </button>
                 ))}
@@ -130,6 +154,18 @@ function ProductDetailPage() {
           <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 0.1 }}>
             <h1 className="text-3xl sm:text-4xl font-heading font-bold mb-3">{product.name}</h1>
 
+            {/* Rating summary */}
+            {reviews.length > 0 && (
+              <div className="flex items-center gap-2 mb-3">
+                <div className="flex">
+                  {[1, 2, 3, 4, 5].map((s) => (
+                    <Star key={s} className={`w-4 h-4 ${s <= Math.round(avgRating) ? 'fill-gold text-gold' : 'text-border'}`} />
+                  ))}
+                </div>
+                <span className="text-sm font-button text-muted-foreground">({reviews.length} reviews)</span>
+              </div>
+            )}
+
             {/* Price */}
             <div className="flex items-baseline gap-3 mb-4">
               <span className="font-price text-3xl font-bold text-crimson">${Number(product.price).toFixed(2)}</span>
@@ -137,7 +173,7 @@ function ProductDetailPage() {
                 <>
                   <span className="font-price text-lg text-muted-foreground line-through">${Number(product.compare_price).toFixed(2)}</span>
                   <span className="bg-success text-success-foreground text-xs font-button font-bold px-2 py-0.5 rounded-full">
-                    You save ${(Number(product.compare_price) - Number(product.price)).toFixed(2)}
+                    Save ${(Number(product.compare_price) - Number(product.price)).toFixed(2)}
                   </span>
                 </>
               )}
@@ -147,13 +183,19 @@ function ProductDetailPage() {
               <p className="text-muted-foreground leading-relaxed mb-5">{product.short_description}</p>
             )}
 
-            {/* Weight options */}
-            {product.weight_options && product.weight_options.length > 0 && (
+            {/* Weight variation selector */}
+            {weightOptions.length > 0 && (
               <div className="mb-5">
-                <p className="text-xs font-button text-muted-foreground uppercase tracking-widest mb-2">Weight</p>
+                <p className="text-xs font-button text-muted-foreground uppercase tracking-widest mb-2">Select Weight</p>
                 <div className="flex flex-wrap gap-2">
-                  {product.weight_options.map((w, i) => (
-                    <button key={w} className={`px-4 py-2 rounded-full text-sm font-button border transition-colors ${i === 0 ? 'bg-crimson text-white border-crimson' : 'border-border hover:border-crimson/30'}`}>{w}</button>
+                  {weightOptions.map((w, i) => (
+                    <button
+                      key={w}
+                      onClick={() => setSelectedWeight(i)}
+                      className={`px-5 py-2.5 rounded-full text-sm font-button border-2 transition-all ${selectedWeight === i ? 'bg-crimson text-white border-crimson shadow-md' : 'border-border hover:border-crimson/40 bg-card'}`}
+                    >
+                      {w}
+                    </button>
                   ))}
                 </div>
               </div>
@@ -190,16 +232,16 @@ function ProductDetailPage() {
               </Button>
             </div>
 
-            {/* Trust signals */}
+            {/* Trust signals with proper icons */}
             <div className="grid grid-cols-2 gap-3 mb-6">
               {[
-                { icon: '🔒', title: 'Secure Checkout', sub: 'SSL Encrypted' },
-                { icon: '🚚', title: 'Cold-Chain Delivery', sub: 'Arrives fresh' },
-                { icon: '💯', title: '7-Day Guarantee', sub: 'Full refund' },
-                { icon: '🌾', title: 'Farm Verified', sub: 'Full traceability' },
+                { Icon: ShieldCheck, title: 'Secure Checkout', sub: 'SSL Encrypted' },
+                { Icon: Truck, title: 'Cold-Chain Delivery', sub: 'Arrives fresh' },
+                { Icon: Award, title: '7-Day Guarantee', sub: 'Full refund' },
+                { Icon: Wheat, title: 'Farm Verified', sub: 'Full traceability' },
               ].map((t) => (
-                <div key={t.title} className="flex items-center gap-2 bg-cream rounded-xl p-3">
-                  <span className="text-lg">{t.icon}</span>
+                <div key={t.title} className="flex items-center gap-2.5 bg-cream rounded-xl p-3">
+                  <t.Icon className="w-5 h-5 text-deep-green shrink-0" strokeWidth={1.8} />
                   <div>
                     <p className="text-xs font-button font-semibold">{t.title}</p>
                     <p className="text-[10px] text-muted-foreground">{t.sub}</p>
@@ -218,17 +260,29 @@ function ProductDetailPage() {
           </div>
         )}
 
-        {/* Review Button & Form */}
+        {/* Reviews Section */}
         <section className="mb-16">
-          <div className="flex items-center gap-4 mb-6">
-            <h2 className="text-2xl font-heading font-bold">Customer Reviews</h2>
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-4">
+              <h2 className="text-2xl font-heading font-bold">Customer Reviews</h2>
+              {reviews.length > 0 && (
+                <div className="flex items-center gap-2">
+                  <div className="flex">
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <Star key={s} className={`w-4 h-4 ${s <= Math.round(avgRating) ? 'fill-gold text-gold' : 'text-border'}`} />
+                    ))}
+                  </div>
+                  <span className="text-sm font-button text-muted-foreground">{avgRating.toFixed(1)} ({reviews.length})</span>
+                </div>
+              )}
+            </div>
             <Button variant="outline" size="sm" className="gap-2" onClick={() => setShowReviewForm(!showReviewForm)}>
               <MessageSquare className="w-4 h-4" /> {showReviewForm ? 'Cancel' : 'Write a Review'}
             </Button>
           </div>
 
           {showReviewForm && (
-            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="bg-cream rounded-2xl p-6 mb-8 max-w-lg">
+            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="bg-cream rounded-2xl p-6 mb-8 max-w-lg">
               <h3 className="font-heading text-lg font-bold mb-4">Write a Review</h3>
               <form onSubmit={handleSubmitReview} className="space-y-3">
                 <div>
@@ -260,7 +314,43 @@ function ProductDetailPage() {
             </motion.div>
           )}
 
-          <p className="text-muted-foreground">No reviews yet. Be the first to review this product!</p>
+          {/* Reviews list */}
+          {reviews.length > 0 ? (
+            <div className="space-y-4 max-w-2xl">
+              {reviews.map((review) => (
+                <div key={review.id} className="bg-card border border-border rounded-2xl p-5">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-full bg-crimson/10 flex items-center justify-center text-sm font-button font-bold text-crimson">
+                        {(review.reviewer_name ?? 'A').charAt(0).toUpperCase()}
+                      </div>
+                      <div>
+                        <p className="font-button font-semibold text-sm">{review.reviewer_name ?? 'Anonymous'}</p>
+                        {review.is_verified_purchase && (
+                          <span className="text-[10px] font-button text-success font-semibold">✓ Verified Purchase</span>
+                        )}
+                      </div>
+                    </div>
+                    <span className="text-xs text-muted-foreground">
+                      {review.created_at ? new Date(review.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''}
+                    </span>
+                  </div>
+                  <div className="flex mb-2">
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <Star key={s} className={`w-4 h-4 ${s <= review.rating ? 'fill-gold text-gold' : 'text-border'}`} />
+                    ))}
+                  </div>
+                  {review.title && <p className="font-button font-semibold text-sm mb-1">{review.title}</p>}
+                  {review.body && <p className="text-sm text-muted-foreground leading-relaxed">{review.body}</p>}
+                  {(review.helpful_count ?? 0) > 0 && (
+                    <p className="text-xs text-muted-foreground mt-2">{review.helpful_count} people found this helpful</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-muted-foreground">No reviews yet. Be the first to review this product!</p>
+          )}
         </section>
 
         {/* Related */}

@@ -2,6 +2,7 @@ import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/r
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { CartDrawer } from "@/components/layout/CartDrawer";
+import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
 
 import appCss from "../styles.css?url";
 
@@ -27,12 +28,12 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "PrimeButchery — Premium Grain-Fed Meats" },
+      { title: "The Prime Butchery — Premium Grain-Fed Meats" },
       { name: "description", content: "Shop chef-trusted, grain-fed gourmet meats. Farm-transparent sourcing, cold-chain delivery, and 100% satisfaction guarantee." },
-      { property: "og:title", content: "PrimeButchery — Premium Grain-Fed Meats" },
+      { property: "og:title", content: "The Prime Butchery — Premium Grain-Fed Meats" },
       { property: "og:description", content: "Shop chef-trusted, grain-fed gourmet meats. Farm-transparent sourcing, cold-chain delivery, and 100% satisfaction guarantee." },
       { property: "og:type", content: "website" },
-      { name: "twitter:title", content: "PrimeButchery — Premium Grain-Fed Meats" },
+      { name: "twitter:title", content: "The Prime Butchery — Premium Grain-Fed Meats" },
       { name: "twitter:description", content: "Shop chef-trusted, grain-fed gourmet meats. Farm-transparent sourcing, cold-chain delivery, and 100% satisfaction guarantee." },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -72,6 +73,7 @@ function RootComponent() {
         <Outlet />
       </main>
       <Footer />
+      <WhatsAppButton />
     </>
   );
 }
