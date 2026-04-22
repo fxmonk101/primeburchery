@@ -23,15 +23,43 @@ function AdminLoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // #region agent log
+  const agentLog = (hypothesisId: string, location: string, message: string, data?: Record<string, unknown>) => {
+    fetch('http://127.0.0.1:7430/ingest/49f49bda-c32c-4631-ad06-3b39b44551a4', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': 'e6566f' },
+      body: JSON.stringify({
+        sessionId: 'e6566f',
+        runId: 'pre-fix',
+        hypothesisId,
+        location,
+        message,
+        data,
+        timestamp: Date.now(),
+      }),
+    }).catch(() => {});
+  };
+  // #endregion
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
     try {
+      agentLog('H4', 'src/routes/admin.login.tsx:handleLogin', 'login submit start', {
+        emailDomain: email?.split('@')[1] ?? null,
+        isPrimaryAdminEmail: email === 'admin@primebutchery.com',
+      });
       // Bootstrap admin on first login attempt
       if (email === 'admin@primebutchery.com') {
+        agentLog('H4', 'src/routes/admin.login.tsx:handleLogin', 'bootstrapAdmin start');
         const bootstrap = await bootstrapAdmin({ data: { email, password } });
+        agentLog('H4', 'src/routes/admin.login.tsx:handleLogin', 'bootstrapAdmin done', {
+          success: Boolean(bootstrap?.success),
+          hasError: Boolean(bootstrap?.error),
+          errorPreview: typeof bootstrap?.error === 'string' ? bootstrap.error.slice(0, 120) : null,
+        });
         if (!bootstrap?.success) {
           setError(bootstrap?.error || 'Failed to initialize admin account.');
           setLoading(false);
@@ -39,7 +67,13 @@ function AdminLoginPage() {
         }
       }
 
+      agentLog('H4', 'src/routes/admin.login.tsx:handleLogin', 'supabase.auth.signInWithPassword start');
       const { data, error: authError } = await supabase.auth.signInWithPassword({ email, password });
+      agentLog('H4', 'src/routes/admin.login.tsx:handleLogin', 'supabase.auth.signInWithPassword done', {
+        hasAuthError: Boolean(authError),
+        authErrorPreview: authError?.message ? authError.message.slice(0, 160) : null,
+        hasUser: Boolean(data?.user),
+      });
 
       if (authError) {
         setError(authError.message);
@@ -54,7 +88,13 @@ function AdminLoginPage() {
       }
 
       // Verify admin role
+      agentLog('H4', 'src/routes/admin.login.tsx:handleLogin', 'checkAdminRole start');
       const roleResult = await checkAdminRole({ data: { userId: data.user.id } });
+      agentLog('H4', 'src/routes/admin.login.tsx:handleLogin', 'checkAdminRole done', {
+        isAdmin: Boolean(roleResult?.isAdmin),
+        hasError: Boolean(roleResult?.error),
+        errorPreview: typeof roleResult?.error === 'string' ? roleResult.error.slice(0, 160) : null,
+      });
 
       if (roleResult.error) {
         await supabase.auth.signOut();
@@ -78,6 +118,11 @@ function AdminLoginPage() {
           : typeof err === 'string'
             ? err
             : 'An unexpected error occurred.';
+      agentLog('H5', 'src/routes/admin.login.tsx:handleLogin', 'handleLogin catch', {
+        errorMessage: message,
+        errorName: err instanceof Error ? err.name : null,
+        errorType: typeof err,
+      });
       setError(message);
       setLoading(false);
     }
