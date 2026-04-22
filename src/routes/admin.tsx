@@ -35,7 +35,7 @@ function AdminLayout() {
 
       try {
         const result = await checkAdminRole({ data: { userId: session.user.id } });
-        if (!result.isAdmin) {
+        if (result.error || !result.isAdmin) {
           await supabase.auth.signOut();
           navigate({ to: '/admin/login' });
           setAuthChecked(true);

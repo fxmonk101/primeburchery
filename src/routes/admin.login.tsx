@@ -31,7 +31,12 @@ function AdminLoginPage() {
     try {
       // Bootstrap admin on first login attempt
       if (email === 'admin@primebutchery.com') {
-        await bootstrapAdmin({ data: { email, password } });
+        const bootstrap = await bootstrapAdmin({ data: { email, password } });
+        if (!bootstrap?.success) {
+          setError(bootstrap?.error || 'Failed to initialize admin account.');
+          setLoading(false);
+          return;
+        }
       }
 
       const { data, error: authError } = await supabase.auth.signInWithPassword({ email, password });
@@ -49,9 +54,16 @@ function AdminLoginPage() {
       }
 
       // Verify admin role
-      const { isAdmin } = await checkAdminRole({ data: { userId: data.user.id } });
+      const roleResult = await checkAdminRole({ data: { userId: data.user.id } });
 
-      if (!isAdmin) {
+      if (roleResult.error) {
+        await supabase.auth.signOut();
+        setError(roleResult.error);
+        setLoading(false);
+        return;
+      }
+
+      if (!roleResult.isAdmin) {
         await supabase.auth.signOut();
         setError('Access denied. Admin privileges required.');
         setLoading(false);
@@ -60,7 +72,13 @@ function AdminLoginPage() {
 
       navigate({ to: '/admin' });
     } catch (err) {
-      setError('An unexpected error occurred.');
+      const message =
+        err instanceof Error
+          ? err.message
+          : typeof err === 'string'
+            ? err
+            : 'An unexpected error occurred.';
+      setError(message);
       setLoading(false);
     }
   };
