@@ -3,8 +3,9 @@ import { motion } from 'framer-motion';
 import { ShieldCheck, ArrowLeft, CreditCard, Building2, Smartphone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCartStore } from '@/store/cartStore';
+import { supabase } from '@/integrations/supabase/client';
 
-import { useState } from 'react';
+import { FormEvent, useState } from 'react';
 
 export const Route = createFileRoute('/checkout')({
   component: CheckoutPage,
@@ -19,13 +20,25 @@ export const Route = createFileRoute('/checkout')({
 const FREE_SHIPPING_THRESHOLD = 75;
 
 function CheckoutPage() {
-  const { items, subtotal } = useCartStore();
+  const { items, subtotal, clearCart } = useCartStore();
   const sub = subtotal();
   const shipping = sub >= FREE_SHIPPING_THRESHOLD ? 0 : 9.99;
   const tax = sub * 0.08;
   const total = sub + shipping + tax;
   const [paymentMethod, setPaymentMethod] = useState('bank-transfer');
   const [step, setStep] = useState(1);
+  const [submitting, setSubmitting] = useState(false);
+  const [orderError, setOrderError] = useState<string | null>(null);
+  const [form, setForm] = useState({
+    fullName: '',
+    email: '',
+    phone: '',
+    addressLine1: '',
+    addressLine2: '',
+    city: '',
+    state: '',
+    zip: '',
+  });
 
   if (items.length === 0) {
     return (
@@ -39,10 +52,69 @@ function CheckoutPage() {
     );
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const updateField = (field: keyof typeof form, value: string) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setOrderError(null);
     if (step < 3) { setStep(step + 1); return; }
-    alert('Order placed successfully! You will receive payment instructions via email. Order #PB-' + Math.floor(1000 + Math.random() * 9000));
+
+    setSubmitting(true);
+
+    const { data: userData } = await supabase.auth.getUser();
+    const userId = userData.user?.id ?? null;
+
+    const { data: order, error: orderError } = await supabase
+      .from('orders')
+      .insert({
+        user_id: userId,
+        guest_email: form.email,
+        payment_method: paymentMethod,
+        shipping_address: {
+          full_name: form.fullName,
+          phone: form.phone,
+          address_line_1: form.addressLine1,
+          address_line_2: form.addressLine2 || null,
+          city: form.city,
+          state: form.state,
+          zip: form.zip,
+        },
+        subtotal: Number(sub.toFixed(2)),
+        shipping_cost: Number(shipping.toFixed(2)),
+        tax: Number(tax.toFixed(2)),
+        total_amount: Number(total.toFixed(2)),
+        status: 'pending',
+      })
+      .select('id')
+      .single();
+
+    if (orderError || !order) {
+      setSubmitting(false);
+      setOrderError(orderError?.message ?? 'Unable to place your order right now.');
+      return;
+    }
+
+    const { error: orderItemsError } = await supabase.from('order_items').insert(
+      items.map((item) => ({
+        order_id: order.id,
+        product_id: item.product.id,
+        quantity: item.quantity,
+        unit_price: item.product.price,
+      })),
+    );
+
+    if (orderItemsError) {
+      setSubmitting(false);
+      setOrderError(orderItemsError.message);
+      return;
+    }
+
+    clearCart();
+    setSubmitting(false);
+    alert(`Order placed successfully! You will receive payment instructions via email. Order #${order.id.slice(0, 8).toUpperCase()}`);
+    window.location.href = '/';
   };
 
   return (
@@ -89,37 +161,37 @@ function CheckoutPage() {
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
                       <label className="text-sm font-button font-semibold mb-2 block">Full Name *</label>
-                      <input type="text" required className="w-full px-4 py-3 rounded-xl border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-crimson/30" placeholder="John Smith" />
+                      <input type="text" required value={form.fullName} onChange={(e) => updateField('fullName', e.target.value)} className="w-full px-4 py-3 rounded-xl border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-crimson/30" placeholder="John Smith" />
                     </div>
                     <div>
                       <label className="text-sm font-button font-semibold mb-2 block">Email *</label>
-                      <input type="email" required className="w-full px-4 py-3 rounded-xl border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-crimson/30" placeholder="john@example.com" />
+                      <input type="email" required value={form.email} onChange={(e) => updateField('email', e.target.value)} className="w-full px-4 py-3 rounded-xl border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-crimson/30" placeholder="john@example.com" />
                     </div>
                   </div>
                   <div>
                     <label className="text-sm font-button font-semibold mb-2 block">Phone *</label>
-                    <input type="tel" required className="w-full px-4 py-3 rounded-xl border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-crimson/30" placeholder="(555) 123-4567" />
+                    <input type="tel" required value={form.phone} onChange={(e) => updateField('phone', e.target.value)} className="w-full px-4 py-3 rounded-xl border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-crimson/30" placeholder="(555) 123-4567" />
                   </div>
                   <div>
                     <label className="text-sm font-button font-semibold mb-2 block">Address Line 1 *</label>
-                    <input type="text" required className="w-full px-4 py-3 rounded-xl border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-crimson/30" placeholder="123 Main Street" />
+                    <input type="text" required value={form.addressLine1} onChange={(e) => updateField('addressLine1', e.target.value)} className="w-full px-4 py-3 rounded-xl border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-crimson/30" placeholder="123 Main Street" />
                   </div>
                   <div>
                     <label className="text-sm font-button font-semibold mb-2 block">Address Line 2</label>
-                    <input type="text" className="w-full px-4 py-3 rounded-xl border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-crimson/30" placeholder="Apt, Suite, Unit (optional)" />
+                    <input type="text" value={form.addressLine2} onChange={(e) => updateField('addressLine2', e.target.value)} className="w-full px-4 py-3 rounded-xl border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-crimson/30" placeholder="Apt, Suite, Unit (optional)" />
                   </div>
                   <div className="grid grid-cols-3 gap-4">
                     <div>
                       <label className="text-sm font-button font-semibold mb-2 block">City *</label>
-                      <input type="text" required className="w-full px-4 py-3 rounded-xl border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-crimson/30" />
+                      <input type="text" required value={form.city} onChange={(e) => updateField('city', e.target.value)} className="w-full px-4 py-3 rounded-xl border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-crimson/30" />
                     </div>
                     <div>
                       <label className="text-sm font-button font-semibold mb-2 block">State *</label>
-                      <input type="text" required className="w-full px-4 py-3 rounded-xl border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-crimson/30" />
+                      <input type="text" required value={form.state} onChange={(e) => updateField('state', e.target.value)} className="w-full px-4 py-3 rounded-xl border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-crimson/30" />
                     </div>
                     <div>
                       <label className="text-sm font-button font-semibold mb-2 block">ZIP *</label>
-                      <input type="text" required className="w-full px-4 py-3 rounded-xl border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-crimson/30" />
+                      <input type="text" required value={form.zip} onChange={(e) => updateField('zip', e.target.value)} className="w-full px-4 py-3 rounded-xl border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-crimson/30" />
                     </div>
                   </div>
                   <Button type="submit" variant="hero" size="xl" className="w-full">Continue to Payment →</Button>
@@ -190,10 +262,11 @@ function CheckoutPage() {
 
                   <div className="flex gap-4">
                     <Button type="button" variant="outline" size="lg" onClick={() => setStep(2)}>← Back</Button>
-                    <Button type="submit" variant="hero" size="xl" className="flex-1 gap-2">
+                    <Button type="submit" variant="hero" size="xl" className="flex-1 gap-2" disabled={submitting}>
                       <ShieldCheck className="w-5 h-5" /> Place Order — ${total.toFixed(2)}
                     </Button>
                   </div>
+                  {orderError && <p className="text-sm text-red-600">{orderError}</p>}
 
                   <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground pt-2">
                     <span>🔒 256-bit SSL</span>

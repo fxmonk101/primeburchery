@@ -40,6 +40,11 @@ function AdminOrders() {
     await supabase.from('orders').update({ notes }).eq('id', id);
   };
 
+  const validateOrder = async (id: string) => {
+    await supabase.from('orders').update({ status: 'confirmed' }).eq('id', id);
+    fetchOrders();
+  };
+
   return (
     <div>
       <h1 className="text-3xl font-heading font-bold text-foreground mb-2">Orders</h1>
@@ -57,15 +62,16 @@ function AdminOrders() {
                 <th className="p-4 text-xs font-medium text-muted-foreground uppercase">Tracking</th>
                 <th className="p-4 text-xs font-medium text-muted-foreground uppercase">Date</th>
                 <th className="p-4 text-xs font-medium text-muted-foreground uppercase">Notes</th>
+                <th className="p-4 text-xs font-medium text-muted-foreground uppercase">Validation</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 Array.from({ length: 5 }).map((_, i) => (
-                  <tr key={i} className="border-b border-border/50"><td colSpan={7} className="p-4"><div className="h-5 bg-muted/50 rounded animate-pulse" /></td></tr>
+                  <tr key={i} className="border-b border-border/50"><td colSpan={8} className="p-4"><div className="h-5 bg-muted/50 rounded animate-pulse" /></td></tr>
                 ))
               ) : orders.length === 0 ? (
-                <tr><td colSpan={7} className="p-12 text-center text-muted-foreground text-sm">No orders yet</td></tr>
+                <tr><td colSpan={8} className="p-12 text-center text-muted-foreground text-sm">No orders yet</td></tr>
               ) : orders.map(order => (
                 <tr key={order.id} className="border-b border-border/50 hover:bg-muted/30">
                   <td className="p-4 text-sm font-mono">{order.id.slice(0, 8)}</td>
@@ -89,6 +95,18 @@ function AdminOrders() {
                       placeholder="Add note..."
                       className="text-xs px-2 py-1 border border-border rounded-lg bg-background w-28 focus:outline-none focus:ring-1 focus:ring-crimson/30"
                     />
+                  </td>
+                  <td className="p-4">
+                    {order.status === 'confirmed' || order.status === 'delivered' ? (
+                      <span className="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700 font-medium">Validated</span>
+                    ) : (
+                      <button
+                        onClick={() => validateOrder(order.id)}
+                        className="text-xs px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 font-medium hover:bg-blue-200"
+                      >
+                        Validate
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}
