@@ -1,7 +1,6 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { bootstrapAdmin, checkAdminRole } from '@/lib/admin-auth.functions';
 import { Lock, Mail, Eye, EyeOff, AlertCircle } from 'lucide-react';
 import logo from '@/assets/logo.png';
 
@@ -15,6 +14,27 @@ export const Route = createFileRoute('/admin/login')({
   }),
 });
 
+/**
+ * Uses the SECURITY DEFINER `has_role` Postgres function already in your DB.
+ * Runs client-side with the user's own auth token — no service-role key needed.
+ */
+async function checkIsAdmin(userId: string): Promise<boolean> {
+  const { data, error } = await supabase.rpc('has_role', {
+    _user_id: userId,
+    _role: 'admin',
+  });
+  if (error) {
+    // Fallback: direct table query
+    const { data: roles } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', userId)
+      .eq('role', 'admin');
+    return (roles?.length ?? 0) > 0;
+  }
+  return Boolean(data);
+}
+
 function AdminLoginPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
@@ -23,56 +43,16 @@ function AdminLoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // #region agent log
-  const agentLog = (hypothesisId: string, location: string, message: string, data?: Record<string, unknown>) => {
-    fetch('http://127.0.0.1:7430/ingest/49f49bda-c32c-4631-ad06-3b39b44551a4', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': 'e6566f' },
-      body: JSON.stringify({
-        sessionId: 'e6566f',
-        runId: 'pre-fix',
-        hypothesisId,
-        location,
-        message,
-        data,
-        timestamp: Date.now(),
-      }),
-    }).catch(() => {});
-  };
-  // #endregion
-
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
     try {
-      agentLog('H4', 'src/routes/admin.login.tsx:handleLogin', 'login submit start', {
-        emailDomain: email?.split('@')[1] ?? null,
-        isPrimaryAdminEmail: email === 'admin@primebutchery.com',
-      });
-      // Bootstrap admin on first login attempt
-      if (email === 'admin@primebutchery.com') {
-        agentLog('H4', 'src/routes/admin.login.tsx:handleLogin', 'bootstrapAdmin start');
-        const bootstrap = await bootstrapAdmin({ data: { email, password } });
-        agentLog('H4', 'src/routes/admin.login.tsx:handleLogin', 'bootstrapAdmin done', {
-          success: Boolean(bootstrap?.success),
-          hasError: Boolean(bootstrap?.error),
-          errorPreview: typeof bootstrap?.error === 'string' ? bootstrap.error.slice(0, 120) : null,
-        });
-        if (!bootstrap?.success) {
-          setError(bootstrap?.error || 'Failed to initialize admin account.');
-          setLoading(false);
-          return;
-        }
-      }
-
-      agentLog('H4', 'src/routes/admin.login.tsx:handleLogin', 'supabase.auth.signInWithPassword start');
-      const { data, error: authError } = await supabase.auth.signInWithPassword({ email, password });
-      agentLog('H4', 'src/routes/admin.login.tsx:handleLogin', 'supabase.auth.signInWithPassword done', {
-        hasAuthError: Boolean(authError),
-        authErrorPreview: authError?.message ? authError.message.slice(0, 160) : null,
-        hasUser: Boolean(data?.user),
+      // Step 1 — authenticate with Supabase Auth
+      const { data, error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
       });
 
       if (authError) {
@@ -87,23 +67,10 @@ function AdminLoginPage() {
         return;
       }
 
-      // Verify admin role
-      agentLog('H4', 'src/routes/admin.login.tsx:handleLogin', 'checkAdminRole start');
-      const roleResult = await checkAdminRole({ data: { userId: data.user.id } });
-      agentLog('H4', 'src/routes/admin.login.tsx:handleLogin', 'checkAdminRole done', {
-        isAdmin: Boolean(roleResult?.isAdmin),
-        hasError: Boolean(roleResult?.error),
-        errorPreview: typeof roleResult?.error === 'string' ? roleResult.error.slice(0, 160) : null,
-      });
+      // Step 2 — verify admin role via client-side RPC (no server function needed)
+      const isAdmin = await checkIsAdmin(data.user.id);
 
-      if (roleResult.error) {
-        await supabase.auth.signOut();
-        setError(roleResult.error);
-        setLoading(false);
-        return;
-      }
-
-      if (!roleResult.isAdmin) {
+      if (!isAdmin) {
         await supabase.auth.signOut();
         setError('Access denied. Admin privileges required.');
         setLoading(false);
@@ -112,18 +79,7 @@ function AdminLoginPage() {
 
       navigate({ to: '/admin' });
     } catch (err) {
-      const message =
-        err instanceof Error
-          ? err.message
-          : typeof err === 'string'
-            ? err
-            : 'An unexpected error occurred.';
-      agentLog('H5', 'src/routes/admin.login.tsx:handleLogin', 'handleLogin catch', {
-        errorMessage: message,
-        errorName: err instanceof Error ? err.name : null,
-        errorType: typeof err,
-      });
-      setError(message);
+      setError(err instanceof Error ? err.message : 'An unexpected error occurred.');
       setLoading(false);
     }
   };
