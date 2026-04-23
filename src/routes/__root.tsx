@@ -1,4 +1,5 @@
-import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
+import { useEffect } from "react";
+import { Outlet, Link, createRootRoute, HeadContent, Scripts, useRouterState } from "@tanstack/react-router";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { CartDrawer } from "@/components/layout/CartDrawer";
@@ -65,6 +66,28 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 function RootComponent() {
+  const location = useRouterState({ select: (state) => state.location });
+
+  useEffect(() => {
+    const hash = location.hash?.replace(/^#/, "");
+
+    if (hash) {
+      const target = document.getElementById(hash);
+      if (!target) {
+        return;
+      }
+
+      const header = document.querySelector("header");
+      const headerOffset = header instanceof HTMLElement ? header.offsetHeight + 12 : 96;
+      const targetTop = target.getBoundingClientRect().top + window.scrollY - headerOffset;
+
+      window.scrollTo({ top: Math.max(targetTop, 0), behavior: "smooth" });
+      return;
+    }
+
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [location.pathname, location.searchStr, location.hash]);
+
   return (
     <>
       <Navbar />

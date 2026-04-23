@@ -64,7 +64,7 @@ function HomePage() {
   return (
     <div className="min-h-screen">
       {/* SECTION 1: HERO */}
-      <section className="relative h-[90vh] min-h-[600px] flex items-center overflow-hidden">
+      <section className="relative h-[88vh] min-h-[520px] sm:min-h-[600px] flex items-center overflow-hidden">
         <div className="absolute inset-0">
           <img src={heroImage} alt="Premium grain-fed steaks beautifully presented" className="w-full h-full object-cover" width={1920} height={1080} />
           <div className="absolute inset-0 bg-gradient-to-r from-charcoal/90 via-charcoal/65 to-charcoal/20" />
@@ -75,13 +75,13 @@ function HomePage() {
               <Flame className="w-4 h-4 text-gold" />
               <span className="font-button text-white text-xs uppercase tracking-[0.2em]">Farm-to-Door Premium Meats Since 2018</span>
             </div>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-heading font-bold text-white leading-[1.1] mb-6">
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-heading font-bold text-white leading-[1.1] mb-5 sm:mb-6">
               Grain-Fed. Chef-Trusted. <br /><span className="text-gold">Unforgettable.</span>
             </h1>
-            <p className="text-white/80 text-base sm:text-lg mb-8 leading-relaxed max-w-lg">
+            <p className="text-white/80 text-sm sm:text-lg mb-7 sm:mb-8 leading-relaxed max-w-lg">
               Premium cuts from verified farms, delivered fresh with cold-chain precision. No middlemen, no compromises.
             </p>
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap gap-3 sm:gap-4">
               <Link to="/products">
                 <Button variant="hero" size="xl" className="gap-2 text-base">
                   Shop Premium Cuts <ArrowRight className="w-5 h-5" />
@@ -93,7 +93,7 @@ function HomePage() {
                 </Button>
               </Link>
             </div>
-            <div className="flex flex-wrap gap-8 mt-10 pt-8 border-t border-white/20">
+            <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-4 sm:gap-8 mt-8 sm:mt-10 pt-6 sm:pt-8 border-t border-white/20">
               {[
                 { value: '12,847', label: 'Orders Delivered', icon: '🥩' },
                 { value: '4.9★', label: 'Avg Rating', icon: '⭐' },
@@ -113,7 +113,7 @@ function HomePage() {
       <TrustBadges />
 
       {/* BEST SELLERS */}
-      <section className="py-16 sm:py-24 bg-cream">
+      <section id="bestsellers" className="py-16 sm:py-24 bg-cream">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <motion.div {...fadeUp} className="flex items-end justify-between mb-10">
             <div>
@@ -141,7 +141,7 @@ function HomePage() {
       </section>
 
       {/* TOP PICKS */}
-      <section className="py-16 sm:py-24">
+      <section id="top-picks" className="py-16 sm:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <motion.div {...fadeUp} className="flex items-end justify-between mb-10">
             <div>
@@ -169,7 +169,7 @@ function HomePage() {
       </section>
 
       {/* SHOP BY CATEGORY */}
-      <section className="py-16 sm:py-24">
+      <section id="collections" className="py-16 sm:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <motion.div {...fadeUp} className="text-center mb-12">
             <p className="text-xs font-button text-gold uppercase tracking-[0.2em] mb-2">Browse Our Range</p>
@@ -194,7 +194,7 @@ function HomePage() {
       </section>
 
       {/* HOW IT WORKS */}
-      <section className="py-16 sm:py-24 bg-cream">
+      <section id="how-it-works" className="py-16 sm:py-24 bg-cream">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <motion.div {...fadeUp} className="text-center mb-14">
             <p className="text-xs font-button text-gold uppercase tracking-[0.2em] mb-2">The PrimeButchery Difference</p>
@@ -221,7 +221,7 @@ function HomePage() {
       </section>
 
       {/* FARM TRANSPARENCY */}
-      <section className="py-16 sm:py-24">
+      <section id="farm-transparency" className="py-16 sm:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <motion.div {...fadeUp} className="text-center mb-12">
             <p className="text-xs font-button text-gold uppercase tracking-[0.2em] mb-2">Full Traceability</p>

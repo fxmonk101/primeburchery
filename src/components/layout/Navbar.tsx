@@ -37,20 +37,20 @@ export function Navbar() {
       </div>
 
       {/* Urgency Bar */}
-      <div className="bg-crimson text-crimson-foreground text-center py-2.5 text-xs sm:text-sm font-button tracking-wide">
+      <div className="bg-crimson text-crimson-foreground text-center py-2.5 px-3 text-xs sm:text-sm leading-relaxed font-button tracking-wide">
         🚚 Free delivery on orders over $75 &nbsp;|&nbsp; 🎉 First order: <strong>10% off</strong> — code <strong>GRAIN10</strong> &nbsp;|&nbsp; ⏱️ Order by 12pm for next-day dispatch
       </div>
 
       {/* Main Header */}
       <header className="sticky top-0 z-50 bg-card/98 backdrop-blur-lg border-b border-border shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="flex items-center justify-between h-18 sm:h-20">
+          <div className="flex items-center justify-between h-16 sm:h-20">
             <button onClick={() => setMobileOpen(true)} className="p-2 hover:bg-accent rounded-full transition-colors lg:hidden">
               <Menu className="w-5 h-5 text-foreground" />
             </button>
 
             <Link to="/" className="flex items-center gap-2 shrink-0">
-              <img src={logo} alt="PrimeButchery — Premium Grain-Fed Meats" className="h-12 sm:h-16 w-auto" />
+              <img src={logo} alt="PrimeButchery — Premium Grain-Fed Meats" className="h-10 sm:h-16 w-auto" />
             </Link>
 
             <div className="hidden lg:flex flex-1 max-w-md mx-8">
@@ -156,6 +156,8 @@ export function Navbar() {
               </div>
 
               <Link to="/our-farms" className="px-4 py-3 text-sm font-button font-medium text-foreground hover:text-crimson transition-colors uppercase tracking-wide" activeProps={{ className: 'text-crimson' }}>Our Farms</Link>
+              <a href="/#bestsellers" className="px-4 py-3 text-sm font-button font-medium text-foreground hover:text-crimson transition-colors uppercase tracking-wide">Best Sellers</a>
+              <a href="/#how-it-works" className="px-4 py-3 text-sm font-button font-medium text-foreground hover:text-crimson transition-colors uppercase tracking-wide">How It Works</a>
               <Link to="/blog" className="px-4 py-3 text-sm font-button font-medium text-foreground hover:text-crimson transition-colors uppercase tracking-wide" activeProps={{ className: 'text-crimson' }}>Blog</Link>
               <Link to="/about" className="px-4 py-3 text-sm font-button font-medium text-foreground hover:text-crimson transition-colors uppercase tracking-wide" activeProps={{ className: 'text-crimson' }}>About</Link>
               <Link to="/contact" className="px-4 py-3 text-sm font-button font-medium text-foreground hover:text-crimson transition-colors uppercase tracking-wide" activeProps={{ className: 'text-crimson' }}>Contact</Link>
@@ -187,7 +189,7 @@ export function Navbar() {
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="absolute left-0 top-0 h-full w-80 bg-card shadow-2xl flex flex-col"
+              className="absolute left-0 top-0 h-full w-[85vw] max-w-sm bg-card shadow-2xl flex flex-col"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex justify-between items-center p-6 border-b border-border">
@@ -215,6 +217,8 @@ export function Navbar() {
                   ))}
                   <div className="my-2 border-t border-border" />
                   <Link to="/our-farms" onClick={() => setMobileOpen(false)} className="text-base font-button py-3 px-3 rounded-lg hover:bg-accent transition-colors">Our Farms</Link>
+                  <a href="/#bestsellers" onClick={() => setMobileOpen(false)} className="text-base font-button py-3 px-3 rounded-lg hover:bg-accent transition-colors">Best Sellers</a>
+                  <a href="/#how-it-works" onClick={() => setMobileOpen(false)} className="text-base font-button py-3 px-3 rounded-lg hover:bg-accent transition-colors">How It Works</a>
                   <Link to="/blog" onClick={() => setMobileOpen(false)} className="text-base font-button py-3 px-3 rounded-lg hover:bg-accent transition-colors">Blog</Link>
                   <Link to="/about" onClick={() => setMobileOpen(false)} className="text-base font-button py-3 px-3 rounded-lg hover:bg-accent transition-colors">About</Link>
                   <Link to="/contact" onClick={() => setMobileOpen(false)} className="text-base font-button py-3 px-3 rounded-lg hover:bg-accent transition-colors">Contact</Link>
