@@ -31,16 +31,31 @@ const fadeUp = {
 };
 
 function HomePage() {
-  const [products, setProducts] = useState<DbProduct[]>([]);
+  const [bestSellerProducts, setBestSellerProducts] = useState<DbProduct[]>([]);
+  const [topPickProducts, setTopPickProducts] = useState<DbProduct[]>([]);
   const [categories, setCategories] = useState<DbCategory[]>([]);
 
   useEffect(() => {
     const load = async () => {
-      const [{ data: prods }, { data: cats }] = await Promise.all([
-        supabase.from('products').select('*').eq('is_active', true).limit(8),
+      const [{ data: bestsellers }, { data: topPicks }, { data: fallback }, { data: cats }] = await Promise.all([
+        supabase
+          .from('products')
+          .select('*')
+          .eq('is_active', true)
+          .eq('is_bestseller', true)
+          .limit(8),
+        supabase
+          .from('products')
+          .select('*')
+          .eq('is_active', true)
+          .eq('is_featured', true)
+          .limit(8),
+        supabase.from('products').select('*').eq('is_active', true).order('created_at', { ascending: false }).limit(16),
         supabase.from('categories').select('*').order('sort_order'),
       ]);
-      setProducts(prods ?? []);
+      const fallbackProducts = fallback ?? [];
+      setBestSellerProducts((bestsellers && bestsellers.length > 0) ? bestsellers : fallbackProducts.slice(0, 8));
+      setTopPickProducts((topPicks && topPicks.length > 0) ? topPicks : fallbackProducts.slice(8, 16));
       setCategories(cats ?? []);
     };
     load();
@@ -97,14 +112,14 @@ function HomePage() {
 
       <TrustBadges />
 
-      {/* BESTSELLERS */}
+      {/* BEST SELLERS */}
       <section className="py-16 sm:py-24 bg-cream">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <motion.div {...fadeUp} className="flex items-end justify-between mb-10">
             <div>
               <p className="text-xs font-button text-gold uppercase tracking-[0.2em] mb-2">Customer Favorites</p>
               <h2 className="text-3xl sm:text-4xl font-heading font-bold">
-                Our <span className="text-crimson">Premium Cuts</span>
+                <span className="text-crimson">Best Sellers</span>
               </h2>
               <p className="text-muted-foreground mt-2 text-sm">The cuts our customers order again and again</p>
             </div>
@@ -113,7 +128,7 @@ function HomePage() {
             </Link>
           </motion.div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-            {products.map((product, i) => (
+            {bestSellerProducts.map((product, i) => (
               <motion.div key={product.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1, duration: 0.4 }}>
                 <ProductCard product={product} />
               </motion.div>
@@ -121,6 +136,34 @@ function HomePage() {
           </div>
           <div className="text-center mt-10 sm:hidden">
             <Link to="/products"><Button variant="heroOutline" size="lg" className="gap-2">View All Products <ArrowRight className="w-4 h-4" /></Button></Link>
+          </div>
+        </div>
+      </section>
+
+      {/* TOP PICKS */}
+      <section className="py-16 sm:py-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <motion.div {...fadeUp} className="flex items-end justify-between mb-10">
+            <div>
+              <p className="text-xs font-button text-gold uppercase tracking-[0.2em] mb-2">Editor Curated</p>
+              <h2 className="text-3xl sm:text-4xl font-heading font-bold">
+                <span className="text-crimson">Top Picks</span>
+              </h2>
+              <p className="text-muted-foreground mt-2 text-sm">A curated selection across our key categories</p>
+            </div>
+            <Link to="/products" className="hidden sm:flex items-center gap-1 text-sm font-button font-semibold text-crimson hover:underline">
+              Shop Collection <ArrowRight className="w-4 h-4" />
+            </Link>
+          </motion.div>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+            {topPickProducts.map((product, i) => (
+              <motion.div key={product.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1, duration: 0.4 }}>
+                <ProductCard product={product} />
+              </motion.div>
+            ))}
+          </div>
+          <div className="text-center mt-10 sm:hidden">
+            <Link to="/products"><Button variant="heroOutline" size="lg" className="gap-2">Shop Collection <ArrowRight className="w-4 h-4" /></Button></Link>
           </div>
         </div>
       </section>
