@@ -24,6 +24,9 @@ async function checkIsAdmin(userId: string): Promise<boolean> {
     _role: 'admin',
   });
   if (error) {
+    // #region agent log
+    fetch('http://127.0.0.1:7442/ingest/90e8e3a2-271c-44ce-b949-01acc50fc135',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'a33d26'},body:JSON.stringify({sessionId:'a33d26',runId:'pre-fix',hypothesisId:'H4',location:'src/routes/admin.login.tsx:checkIsAdmin',message:'RPC has_role failed, using fallback query',data:{rpcErrorMessage:error.message,rpcErrorCode:error.code ?? null,userIdPrefix:userId.slice(0,8)},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
     // Fallback: direct table query
     const { data: roles } = await supabase
       .from('user_roles')
@@ -49,6 +52,9 @@ function AdminLoginPage() {
     setLoading(true);
 
     try {
+      // #region agent log
+      fetch('http://127.0.0.1:7442/ingest/90e8e3a2-271c-44ce-b949-01acc50fc135',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'a33d26'},body:JSON.stringify({sessionId:'a33d26',runId:'pre-fix',hypothesisId:'H2',location:'src/routes/admin.login.tsx:handleLogin',message:'Admin login submitted',data:{emailDomain:email.includes('@')?email.split('@')[1]:null,emailLength:email.length,passwordLength:password.length},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
       // Step 1 — authenticate with Supabase Auth
       const { data, error: authError } = await supabase.auth.signInWithPassword({
         email,
@@ -56,6 +62,9 @@ function AdminLoginPage() {
       });
 
       if (authError) {
+        // #region agent log
+        fetch('http://127.0.0.1:7442/ingest/90e8e3a2-271c-44ce-b949-01acc50fc135',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'a33d26'},body:JSON.stringify({sessionId:'a33d26',runId:'pre-fix',hypothesisId:'H3',location:'src/routes/admin.login.tsx:handleLogin',message:'Supabase signInWithPassword failed',data:{authErrorMessage:authError.message,authErrorStatus:(authError as { status?: number }).status ?? null},timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
         setError(authError.message);
         setLoading(false);
         return;
@@ -69,6 +78,9 @@ function AdminLoginPage() {
 
       // Step 2 — verify admin role via client-side RPC (no server function needed)
       const isAdmin = await checkIsAdmin(data.user.id);
+      // #region agent log
+      fetch('http://127.0.0.1:7442/ingest/90e8e3a2-271c-44ce-b949-01acc50fc135',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'a33d26'},body:JSON.stringify({sessionId:'a33d26',runId:'pre-fix',hypothesisId:'H5',location:'src/routes/admin.login.tsx:handleLogin',message:'Post-auth admin role check result',data:{userIdPrefix:data.user.id.slice(0,8),isAdmin},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
 
       if (!isAdmin) {
         await supabase.auth.signOut();

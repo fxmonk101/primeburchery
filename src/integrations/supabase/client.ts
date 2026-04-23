@@ -2,17 +2,26 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
+function normalizeSupabaseUrl(url: string): string {
+  return url.replace(/\/rest\/v1\/?$/, '').replace(/\/+$/, '');
+}
+
 function createSupabaseClient() {
   // Use import.meta.env for client-side (Vite build-time replacement)
   // Fall back to process.env for SSR (server-side rendering)
-  const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
+  const SUPABASE_URL_RAW = import.meta.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
   const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_PUBLISHABLE_KEY;
 
-  if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
+  if (!SUPABASE_URL_RAW || !SUPABASE_PUBLISHABLE_KEY) {
     throw new Error(
       'Missing Supabase environment variables. Ensure SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY (or VITE_ prefixed versions) are set in your .env file.'
     );
   }
+  const SUPABASE_URL = normalizeSupabaseUrl(SUPABASE_URL_RAW);
+
+  // #region agent log
+  fetch('http://127.0.0.1:7442/ingest/90e8e3a2-271c-44ce-b949-01acc50fc135',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'a33d26'},body:JSON.stringify({sessionId:'a33d26',runId:'pre-fix',hypothesisId:'H1',location:'src/integrations/supabase/client.ts:createSupabaseClient',message:'Supabase client env resolved',data:{hasViteUrl:Boolean(import.meta.env.VITE_SUPABASE_URL),hasServerUrl:Boolean(process.env.SUPABASE_URL),rawUrlIncludesRestV1:SUPABASE_URL_RAW.includes('/rest/v1'),normalizedUrlIncludesRestV1:SUPABASE_URL.includes('/rest/v1'),urlPreview:SUPABASE_URL.replace(/^https?:\/\//,'').slice(0,60)},timestamp:Date.now()})}).catch(()=>{});
+  // #endregion
 
   return createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
     auth: {
