@@ -102,7 +102,11 @@ function AdminProductEdit() {
       certifications: toArray(form.certifications), cooking_methods: toArray(form.cooking_methods),
       badge: form.badge || null, is_featured: form.is_featured,
       is_bestseller: form.is_bestseller, is_active: form.is_active,
-    }).eq('id', productId);
+      meta_title: form.meta_title || null,
+      meta_description: form.meta_description || null,
+      meta_keywords: form.meta_keywords || null,
+      focus_keyword: form.focus_keyword || null,
+    } as any).eq('id', productId);
     setSaving(false);
     if (error) { alert('Error: ' + error.message); return; }
     navigate({ to: '/admin/products' });
