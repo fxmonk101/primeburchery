@@ -29,10 +29,12 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" },
       { title: "The Prime Butchery — Premium Grain-Fed Meats" },
       { name: "description", content: "Shop chef-trusted, grain-fed gourmet meats. Farm-transparent sourcing, cold-chain delivery, and 100% satisfaction guarantee." },
       { property: "og:title", content: "The Prime Butchery — Premium Grain-Fed Meats" },
       { property: "og:description", content: "Shop chef-trusted, grain-fed gourmet meats. Farm-transparent sourcing, cold-chain delivery, and 100% satisfaction guarantee." },
+      { property: "og:site_name", content: "The Prime Butchery" },
       { property: "og:type", content: "website" },
       { name: "twitter:title", content: "The Prime Butchery — Premium Grain-Fed Meats" },
       { name: "twitter:description", content: "Shop chef-trusted, grain-fed gourmet meats. Farm-transparent sourcing, cold-chain delivery, and 100% satisfaction guarantee." },

@@ -23,6 +23,7 @@ function AdminProductEdit() {
     weight_options: '', origin_farm: '', origin_country: '',
     grain_fed_days: '', marbling_score: '', badge: '',
     certifications: '', cooking_methods: '', tags: '',
+    meta_title: '', meta_description: '', meta_keywords: '', focus_keyword: '',
     is_featured: false, is_bestseller: false, is_active: true,
   });
 
@@ -49,6 +50,10 @@ function AdminProductEdit() {
           certifications: (product.certifications ?? []).join(', '),
           cooking_methods: (product.cooking_methods ?? []).join(', '),
           tags: (product.tags ?? []).join(', '),
+          meta_title: (product as any).meta_title ?? '',
+          meta_description: (product as any).meta_description ?? '',
+          meta_keywords: (product as any).meta_keywords ?? '',
+          focus_keyword: (product as any).focus_keyword ?? '',
           is_featured: product.is_featured ?? false,
           is_bestseller: product.is_bestseller ?? false,
           is_active: product.is_active ?? true,
@@ -97,7 +102,11 @@ function AdminProductEdit() {
       certifications: toArray(form.certifications), cooking_methods: toArray(form.cooking_methods),
       badge: form.badge || null, is_featured: form.is_featured,
       is_bestseller: form.is_bestseller, is_active: form.is_active,
-    }).eq('id', productId);
+      meta_title: form.meta_title || null,
+      meta_description: form.meta_description || null,
+      meta_keywords: form.meta_keywords || null,
+      focus_keyword: form.focus_keyword || null,
+    } as any).eq('id', productId);
     setSaving(false);
     if (error) { alert('Error: ' + error.message); return; }
     navigate({ to: '/admin/products' });
@@ -216,7 +225,54 @@ function AdminProductEdit() {
             <div><label className="text-sm font-medium text-foreground mb-1.5 block">Certifications</label><input value={form.certifications} onChange={e => updateField('certifications', e.target.value)} className="w-full px-4 py-2.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-crimson/30" /></div>
             <div><label className="text-sm font-medium text-foreground mb-1.5 block">Cooking Methods</label><input value={form.cooking_methods} onChange={e => updateField('cooking_methods', e.target.value)} className="w-full px-4 py-2.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-crimson/30" /></div>
           </div>
-          <div><label className="text-sm font-medium text-foreground mb-1.5 block">Tags</label><input value={form.tags} onChange={e => updateField('tags', e.target.value)} className="w-full px-4 py-2.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-crimson/30" /></div>
+          <div><label className="text-sm font-medium text-foreground mb-1.5 block">Tags (comma-separated)</label><input value={form.tags} onChange={e => updateField('tags', e.target.value)} placeholder="grass-fed, premium, dry-aged" className="w-full px-4 py-2.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-crimson/30" /></div>
+        </section>
+
+        {/* SEO — Rank Math style */}
+        <section className="bg-card rounded-2xl border border-border p-6 space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="font-heading font-semibold text-foreground text-lg">SEO Settings</h2>
+              <p className="text-xs text-muted-foreground mt-0.5">Rank Math-style controls for search engines and social sharing.</p>
+            </div>
+            {form.focus_keyword && form.name && (
+              <span className={`text-xs font-button px-2.5 py-1 rounded-full ${form.name.toLowerCase().includes(form.focus_keyword.toLowerCase()) ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
+                {form.name.toLowerCase().includes(form.focus_keyword.toLowerCase()) ? '✓ Keyword in title' : '⚠ Keyword not in title'}
+              </span>
+            )}
+          </div>
+          <div>
+            <label className="text-sm font-medium text-foreground mb-1.5 block">Focus Keyword</label>
+            <input value={form.focus_keyword} onChange={e => updateField('focus_keyword', e.target.value)} placeholder="e.g. wagyu ribeye steak" className="w-full px-4 py-2.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-crimson/30" />
+            <p className="text-[11px] text-muted-foreground mt-1">The primary phrase you want this product to rank for in Google.</p>
+          </div>
+          <div>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="text-sm font-medium text-foreground">SEO Title</label>
+              <span className={`text-[10px] font-mono ${form.meta_title.length > 60 ? 'text-red-500' : 'text-muted-foreground'}`}>{form.meta_title.length}/60</span>
+            </div>
+            <input value={form.meta_title} onChange={e => updateField('meta_title', e.target.value)} placeholder={form.name || 'Defaults to product name'} className="w-full px-4 py-2.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-crimson/30" />
+          </div>
+          <div>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="text-sm font-medium text-foreground">Meta Description</label>
+              <span className={`text-[10px] font-mono ${form.meta_description.length > 160 ? 'text-red-500' : 'text-muted-foreground'}`}>{form.meta_description.length}/160</span>
+            </div>
+            <textarea value={form.meta_description} onChange={e => updateField('meta_description', e.target.value)} rows={3} placeholder="Compelling summary shown in search results..." className="w-full px-4 py-2.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-crimson/30 resize-none" />
+          </div>
+          <div>
+            <label className="text-sm font-medium text-foreground mb-1.5 block">Meta Keywords</label>
+            <input value={form.meta_keywords} onChange={e => updateField('meta_keywords', e.target.value)} placeholder="wagyu, premium beef, grain-fed, ribeye" className="w-full px-4 py-2.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-crimson/30" />
+            <p className="text-[11px] text-muted-foreground mt-1">Comma-separated. Helps with site search and is included in the page meta tag.</p>
+          </div>
+
+          {/* Google preview */}
+          <div className="rounded-xl border border-border p-4 bg-muted/30">
+            <p className="text-[11px] uppercase tracking-wider font-button text-muted-foreground mb-2">Google Preview</p>
+            <p className="text-xs text-[#202124]">primeburchery.lovable.app › products › {form.slug || 'slug'}</p>
+            <p className="text-base text-[#1a0dab] font-medium truncate">{form.meta_title || form.name || 'Product Title'}</p>
+            <p className="text-xs text-[#4d5156] line-clamp-2">{form.meta_description || form.short_description || 'Meta description will appear here when filled in.'}</p>
+          </div>
         </section>
 
         <div className="flex items-center gap-4 pb-8">

@@ -1,12 +1,13 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { motion } from 'framer-motion';
-import { Star, ShoppingCart, Heart, Minus, Plus, Eye, MessageSquare, ShieldCheck, Truck, Award, Wheat } from 'lucide-react';
+import { Star, ShoppingCart, Heart, Minus, Plus, Eye, MessageSquare, ShieldCheck, Truck, Award, Wheat, Tag } from 'lucide-react';
 import { useCartStore } from '@/store/cartStore';
 import { Button } from '@/components/ui/button';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ProductCard } from '@/components/product/ProductCard';
 import { supabase } from '@/integrations/supabase/client';
 import type { DbProduct } from '@/lib/supabase-types';
+import { useRealtimeTable } from '@/hooks/useRealtimeTable';
 
 interface Review {
   id: string;
@@ -19,14 +20,51 @@ interface Review {
   created_at: string | null;
 }
 
+type ProductWithSeo = DbProduct & {
+  meta_title?: string | null;
+  meta_description?: string | null;
+  meta_keywords?: string | null;
+  focus_keyword?: string | null;
+};
+
 export const Route = createFileRoute('/products/$slug')({
   component: ProductDetailPage,
-  head: () => ({
-    meta: [
-      { title: 'Product — The Prime Butchery' },
-      { name: 'description', content: 'Premium grain-fed meats delivered fresh.' },
-    ],
-  }),
+  loader: async ({ params }) => {
+    const { data } = await supabase
+      .from('products')
+      .select('name, short_description, description, meta_title, meta_description, meta_keywords, images, slug')
+      .eq('slug', params.slug)
+      .eq('is_active', true)
+      .maybeSingle();
+    return { product: data };
+  },
+  head: ({ params, loaderData }) => {
+    const p = loaderData?.product as any;
+    const title = p?.meta_title || (p?.name ? `${p.name} — The Prime Butchery` : 'Product — The Prime Butchery');
+    const desc =
+      p?.meta_description ||
+      p?.short_description ||
+      (p?.description ? String(p.description).replace(/<[^>]+>/g, '').slice(0, 160) : 'Premium grain-fed meats delivered fresh.');
+    const url = `https://primeburchery.lovable.app/products/${params.slug}`;
+    const image = p?.images?.[0];
+    const meta: Array<Record<string, string>> = [
+      { title },
+      { name: 'description', content: desc },
+      { property: 'og:title', content: title },
+      { property: 'og:description', content: desc },
+      { property: 'og:type', content: 'product' },
+      { property: 'og:url', content: url },
+      { name: 'twitter:card', content: 'summary_large_image' },
+      { name: 'twitter:title', content: title },
+      { name: 'twitter:description', content: desc },
+    ];
+    if (p?.meta_keywords) meta.push({ name: 'keywords', content: p.meta_keywords });
+    if (image) {
+      meta.push({ property: 'og:image', content: image });
+      meta.push({ name: 'twitter:image', content: image });
+    }
+    return { meta, links: [{ rel: 'canonical', href: url }] };
+  },
   notFoundComponent: () => (
     <div className="min-h-screen flex items-center justify-center">
       <div className="text-center">
@@ -42,7 +80,7 @@ function ProductDetailPage() {
   const addItem = useCartStore((s) => s.addItem);
   const openCart = useCartStore((s) => s.openCart);
   const [qty, setQty] = useState(1);
-  const [product, setProduct] = useState<DbProduct | null>(null);
+  const [product, setProduct] = useState<ProductWithSeo | null>(null);
   const [related, setRelated] = useState<DbProduct[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
@@ -52,27 +90,31 @@ function ProductDetailPage() {
   const [reviewForm, setReviewForm] = useState({ name: '', title: '', body: '', rating: 5 });
   const [submittingReview, setSubmittingReview] = useState(false);
 
-  useEffect(() => {
-    const load = async () => {
-      setLoading(true);
-      setActiveImage(0);
-      setSelectedWeight(0);
-      const { data } = await supabase.from('products').select('*').eq('slug', slug).eq('is_active', true).single();
-      setProduct(data);
-      if (data) {
-        const [{ data: rel }, { data: revs }] = await Promise.all([
-          data.category_id
-            ? supabase.from('products').select('*').eq('category_id', data.category_id).neq('id', data.id).eq('is_active', true).limit(4)
-            : Promise.resolve({ data: [] }),
-          supabase.from('reviews').select('*').eq('product_id', data.id).eq('is_approved', true).order('created_at', { ascending: false }).limit(20),
-        ]);
-        setRelated(rel ?? []);
-        setReviews((revs as Review[]) ?? []);
-      }
-      setLoading(false);
-    };
-    load();
+  const load = useCallback(async () => {
+    const { data } = await supabase.from('products').select('*').eq('slug', slug).eq('is_active', true).maybeSingle();
+    setProduct(data as ProductWithSeo | null);
+    if (data) {
+      const [{ data: rel }, { data: revs }] = await Promise.all([
+        data.category_id
+          ? supabase.from('products').select('*').eq('category_id', data.category_id).neq('id', data.id).eq('is_active', true).limit(4)
+          : Promise.resolve({ data: [] }),
+        supabase.from('reviews').select('*').eq('product_id', data.id).eq('is_approved', true).order('created_at', { ascending: false }).limit(20),
+      ]);
+      setRelated(rel ?? []);
+      setReviews((revs as Review[]) ?? []);
+    }
+    setLoading(false);
   }, [slug]);
+
+  useEffect(() => {
+    setLoading(true);
+    setActiveImage(0);
+    setSelectedWeight(0);
+    load();
+  }, [load]);
+
+  // Realtime: refetch when admin edits the product
+  useRealtimeTable('products', load);
 
   if (loading) return <div className="min-h-screen flex items-center justify-center"><p className="text-muted-foreground">Loading...</p></div>;
 
@@ -249,6 +291,21 @@ function ProductDetailPage() {
                 </div>
               ))}
             </div>
+            {/* Tags */}
+            {product.tags && product.tags.length > 0 && (
+              <div className="flex flex-wrap items-center gap-2 mt-2 mb-2">
+                <Tag className="w-3.5 h-3.5 text-muted-foreground" />
+                {product.tags.map((t) => (
+                  <Link
+                    key={t}
+                    to="/products"
+                    className="text-[11px] font-button uppercase tracking-wider bg-cream hover:bg-gold/20 text-deep-green px-2.5 py-1 rounded-full transition-colors border border-border"
+                  >
+                    {t}
+                  </Link>
+                ))}
+              </div>
+            )}
           </motion.div>
         </div>
 
