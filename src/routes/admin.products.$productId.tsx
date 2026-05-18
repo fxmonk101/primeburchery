@@ -23,6 +23,7 @@ function AdminProductEdit() {
     weight_options: '', origin_farm: '', origin_country: '',
     grain_fed_days: '', marbling_score: '', badge: '',
     certifications: '', cooking_methods: '', tags: '',
+    meta_title: '', meta_description: '', meta_keywords: '', focus_keyword: '',
     is_featured: false, is_bestseller: false, is_active: true,
   });
 
