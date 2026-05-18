@@ -1,13 +1,25 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { motion } from 'framer-motion';
 import { ProductCard } from '@/components/product/ProductCard';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import type { DbProduct, DbCategory } from '@/lib/supabase-types';
+import { useRealtimeTable } from '@/hooks/useRealtimeTable';
 
 export const Route = createFileRoute('/products/')({
   component: ProductsPage,
+  head: () => ({
+    meta: [
+      { title: 'Shop Premium Meats — The Prime Butchery' },
+      { name: 'description', content: 'Browse our full collection of premium grain-fed beef, pork, lamb, poultry, and charcuterie. Farm-verified, cold-chain delivered.' },
+      { property: 'og:title', content: 'Shop Premium Meats — The Prime Butchery' },
+      { property: 'og:description', content: 'Browse our full collection of premium grain-fed beef, pork, lamb, poultry, and charcuterie.' },
+      { property: 'og:url', content: 'https://primeburchery.lovable.app/products' },
+      { property: 'og:type', content: 'website' },
+    ],
+    links: [{ rel: 'canonical', href: 'https://primeburchery.lovable.app/products' }],
+  }),
 });
 
 function ProductsPage() {
@@ -17,18 +29,19 @@ function ProductsPage() {
   const [sortBy, setSortBy] = useState('name');
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const load = async () => {
-      const [{ data: prods }, { data: cats }] = await Promise.all([
-        supabase.from('products').select('*').eq('is_active', true),
-        supabase.from('categories').select('*').order('sort_order'),
-      ]);
-      setProducts(prods ?? []);
-      setCategories(cats ?? []);
-      setLoading(false);
-    };
-    load();
+  const load = useCallback(async () => {
+    const [{ data: prods }, { data: cats }] = await Promise.all([
+      supabase.from('products').select('*').eq('is_active', true),
+      supabase.from('categories').select('*').order('sort_order'),
+    ]);
+    setProducts(prods ?? []);
+    setCategories(cats ?? []);
+    setLoading(false);
   }, []);
+
+  useEffect(() => { load(); }, [load]);
+  useRealtimeTable('products', load);
+  useRealtimeTable('categories', load);
 
   const filtered = products.filter((p) => !activeCategory || p.category_id === activeCategory);
 
