@@ -59,6 +59,13 @@ export function ProductCard({ product }: ProductCardProps) {
                 <span className="font-price text-sm text-muted-foreground line-through">${Number(product.compare_price).toFixed(2)}</span>
               )}
             </div>
+            {product.tags && product.tags.length > 0 && (
+              <div className="flex flex-wrap gap-1 mt-2">
+                {product.tags.slice(0, 3).map((t) => (
+                  <span key={t} className="text-[9px] font-button uppercase tracking-wider bg-cream text-deep-green px-1.5 py-0.5 rounded-full">{t}</span>
+                ))}
+              </div>
+            )}
             {(product.stock_qty ?? 0) <= 10 && (product.stock_qty ?? 0) > 0 && (
               <p className="text-[10px] text-sale font-button font-semibold mt-1">Only {product.stock_qty} left in stock!</p>
             )}
