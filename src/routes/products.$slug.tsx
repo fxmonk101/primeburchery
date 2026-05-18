@@ -291,6 +291,21 @@ function ProductDetailPage() {
                 </div>
               ))}
             </div>
+            {/* Tags */}
+            {product.tags && product.tags.length > 0 && (
+              <div className="flex flex-wrap items-center gap-2 mt-2 mb-2">
+                <Tag className="w-3.5 h-3.5 text-muted-foreground" />
+                {product.tags.map((t) => (
+                  <Link
+                    key={t}
+                    to="/products"
+                    className="text-[11px] font-button uppercase tracking-wider bg-cream hover:bg-gold/20 text-deep-green px-2.5 py-1 rounded-full transition-colors border border-border"
+                  >
+                    {t}
+                  </Link>
+                ))}
+              </div>
+            )}
           </motion.div>
         </div>
 
