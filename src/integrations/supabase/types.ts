@@ -293,6 +293,7 @@ export type Database = {
           cooking_methods: string[] | null
           created_at: string | null
           description: string | null
+          focus_keyword: string | null
           grain_fed_days: number | null
           id: string
           images: string[] | null
@@ -300,6 +301,9 @@ export type Database = {
           is_bestseller: boolean | null
           is_featured: boolean | null
           marbling_score: string | null
+          meta_description: string | null
+          meta_keywords: string | null
+          meta_title: string | null
           name: string
           nutritional_info: Json | null
           origin_country: string | null
@@ -321,6 +325,7 @@ export type Database = {
           cooking_methods?: string[] | null
           created_at?: string | null
           description?: string | null
+          focus_keyword?: string | null
           grain_fed_days?: number | null
           id?: string
           images?: string[] | null
@@ -328,6 +333,9 @@ export type Database = {
           is_bestseller?: boolean | null
           is_featured?: boolean | null
           marbling_score?: string | null
+          meta_description?: string | null
+          meta_keywords?: string | null
+          meta_title?: string | null
           name: string
           nutritional_info?: Json | null
           origin_country?: string | null
@@ -349,6 +357,7 @@ export type Database = {
           cooking_methods?: string[] | null
           created_at?: string | null
           description?: string | null
+          focus_keyword?: string | null
           grain_fed_days?: number | null
           id?: string
           images?: string[] | null
@@ -356,6 +365,9 @@ export type Database = {
           is_bestseller?: boolean | null
           is_featured?: boolean | null
           marbling_score?: string | null
+          meta_description?: string | null
+          meta_keywords?: string | null
+          meta_title?: string | null
           name?: string
           nutritional_info?: Json | null
           origin_country?: string | null
